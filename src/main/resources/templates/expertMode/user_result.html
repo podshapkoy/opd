@@ -6,49 +6,50 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div th:if="${oneTestResult_10 == null or oneTestResult_10.size() == 0}">
-    <h2>Пользователь еще не прошел данный тест</h2>
-</div>
-<script>
-    let results = [];
-    let inRes = [];
-    let resIndex;
-</script>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<div class="main">
+    <div th:if="${oneTestResult_10 == null or oneTestResult_10.size() == 0}">
+        <h2>Пользователь еще не прошел данный тест</h2>
+    </div>
+    <script>
+        let results = [];
+        let inRes = [];
+        let resIndex;
+    </script>
 
-<div th:unless="${oneTestResult_10 == null or oneTestResult_10.size() == 0}">
-    <div th:each="result, iterStat : ${oneTestResult_10}">
-        <div th:each="getResult : ${result.getResult()}">
-            <script th:inline="javascript">
-                inRes.push([[${getResult}]]);
+    <div th:unless="${oneTestResult_10 == null or oneTestResult_10.size() == 0}">
+        <div th:each="result, iterStat : ${oneTestResult_10}">
+            <div th:each="getResult : ${result.getResult()}">
+                <script th:inline="javascript">
+                    inRes.push([[${getResult}]]);
+                </script>
+            </div>
+            <script>
+                results.push(inRes);
+                inRes = [];
             </script>
         </div>
-        <script>
-            results.push(inRes);
-            inRes = [];
-        </script>
     </div>
-</div>
-<div th:unless="${oneTestResult == null or oneTestResult.size() == 0}">
-
-</div>
-<div class="col-md-6">
-    <div style="width: 30%;height: 30%; text-align: right">
-        <h3>Результат последних 10 тестов</h3>
-        <canvas id="chart_1"></canvas>
-        <canvas id="chart_2"></canvas>
-    </div>
-</div>
-<div class="col-md-6">
     <div th:unless="${oneTestResult == null or oneTestResult.size() == 0}">
-        <div th:each="oneTest, ind : ${oneTestResult}">
-            <div th:with="resultValue=${T(java.lang.Float).parseFloat(oneTest.getResult()[1])}"
-                 th:text="${'Тест ' + (ind.index + 1) + ' ' + oneTest.getResult()[0] + ' ' + #numbers.formatDecimal(resultValue / 1000, 2, 2)}"></div>
+
+    </div>
+    <div class="col-md-6">
+        <div style="width: 30%;height: 30%; text-align: right">
+            <h3>Результат последних 10 тестов</h3>
+            <canvas id="chart_1"></canvas>
+            <canvas id="chart_2"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div th:unless="${oneTestResult == null or oneTestResult.size() == 0}">
+            <div th:each="oneTest, ind : ${oneTestResult}">
+                <div th:with="resultValue=${T(java.lang.Float).parseFloat(oneTest.getResult()[1])}"
+                     th:text="${'Тест ' + (ind.index + 1) + ' ' + oneTest.getResult()[0] + ' ' + #numbers.formatDecimal(resultValue / 1000, 2, 2)}"></div>
 
             </div>
         </div>
     </div>
 </div>
-
 <script>
     console.log(results)
     let val = [];
@@ -57,7 +58,7 @@
     let label = 'Правильность результатов(%)/Среднее значение(мс)'
     for (let i = 0; i < results.length; i++) {
         val.push(parseInt(results[i][0].replace('%', '')));
-        time.push(parseInt(results[i][1])/1000);
+        time.push(parseInt(results[i][1]) / 1000);
         labels.push((i + 1).toString())
     }
     let chartData_1 = {
@@ -65,8 +66,8 @@
         datasets: [{
             label: label,
             data: val,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(133,154,60,0.19)',
+            borderColor: '#2d3112',
             borderWidth: 1
         }]
     };
@@ -93,8 +94,8 @@
         datasets: [{
             label: label,
             data: time,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(133,154,60,0.19)',
+            borderColor: '#2d3112',
             borderWidth: 1
         }]
     };
