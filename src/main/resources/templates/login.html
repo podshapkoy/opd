@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <!--    Страничка логина, только мыло и пароль. Если пользователь не числится, Invalid username and password-->
+    <title>Login </title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 5px;
+            margin-bottom: 30px;
+        }
+
+        .main {
+            width: 400px;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            font-family: Courier, monospace;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<div class="container">
+    <div class="main">
+        <h1>Login</h1>
+        <div th:if="${param.error}">
+            Invalid username and password.
+        </div>
+        <div th:if="${param.logout}">
+            You have been logged out.
+        </div>
+        <form th:action="@{/login}" method="post">
+            <div><label> Адрес электронной почты : <input type="text" name="username"/> </label></div>
+            <div><label> Пароль: <input type="password" name="password"/> </label></div>
+            <div><input type="submit" value="Sign In"/></div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

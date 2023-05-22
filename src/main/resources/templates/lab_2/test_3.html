@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Test</title>
+    <style>
+        #question {
+            font-size: 8rem;
+            color: #ffffff;
+            margin-bottom: 50px;
+        }
+
+        #even,
+        #odd {
+            font-family: Courier, monospace;
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(74, 79, 32, 0.8);
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #even:hover,
+        #odd:hover {
+            background-color: #45a049;
+        }
+
+        #time {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests}"></div>
+<div class="container">
+    <h1>Решение примеры на четность и нечетность</h1>
+    <div id="question"></div>
+    <div class="buttons">
+        <button id="even">Результат четный</button>
+        <button id="odd">Результат нечетный</button>
+    </div>
+    <div id="time"></div>
+</div>
+<script>
+
+    let attempts = 0;
+    let correctAnswers = 0;
+    let answers = [];
+    let startTime = new Date().getTime();
+    let isEven;
+    generateQuestion();
+
+    function showResults() {
+        let endTime = new Date().getTime();
+        let timeTaken = (endTime - startTime);
+        let message = 'Вы ответили правильно на ' + correctAnswers + ' из ' + attempts + ' вопросов за ' + timeTaken / 1000 + ' секунд(время после ответа не входит в данный результат)';
+        // document.getElementById('question').innerHTML = 'Вы ответили правильно на ' + correctAnswers + ' из ' + attempts + ' вопросов за ' + timeTaken + ' секунд';
+        document.getElementById('even').disabled = true;
+        document.getElementById('odd').disabled = true;
+        localStorage.setItem('label', JSON.stringify("Правильность ответов (%)"))
+        localStorage.setItem('message', JSON.stringify(message));
+        localStorage.setItem('answers', JSON.stringify(answers));
+        localStorage.setItem('aware', JSON.stringify("!"));
+        localStorage.setItem('timeTaken', JSON.stringify(timeTaken));
+        window.location.replace('/tests/test_3/test_result ');
+        // console.log(answers);
+    }
+
+    function generateQuestion() {
+        if (correctAnswers >= 7) {
+            showResults();
+        } else {
+            let num1 = Math.floor(Math.random() * 10) + 1;
+            let num2 = Math.floor(Math.random() * 10) + 1;
+            let sum = num1 + num2;
+            isEven = sum % 2 === 0;
+            document.getElementById('question').innerHTML = num1 + ' + ' + num2 + ' = ';
+            document.getElementById('even').removeEventListener('click', onEvenClick);
+            document.getElementById('odd').removeEventListener('click', onOddClick);
+            document.getElementById('even').addEventListener('click', onEvenClick);
+            document.getElementById('odd').addEventListener('click', onOddClick);
+            document.getElementById('time').innerHTML = 'Attempt ' + (attempts + 1).toString();
+        }
+    }
+
+    function onOddClick() {
+        attempts++;
+        if (!isEven) {
+            correctAnswers++;
+            answers.push(100);
+            updateProgressBar();
+        } else {
+            answers.push(0);
+        }
+        generateQuestion();
+    }
+
+    function onEvenClick() {
+        attempts++;
+        if (isEven) {
+            correctAnswers++;
+            answers.push(100);
+            updateProgressBar();
+        } else {
+            answers.push(0);
+        }
+        generateQuestion();
+    }
+
+    document.getElementById('even').addEventListener('click', onEvenClick);
+    document.getElementById('odd').addEventListener('click', onOddClick);
+    document.getElementById('time').innerHTML = 'Attempt ' + (attempts + 1).toString();
+</script>
+</body>
+</html>

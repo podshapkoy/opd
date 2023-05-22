@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--    Пока что страничка со всеми тестами, потом переделаю под страничку с доступными для пользователями тестами-->
+    <meta charset="UTF-8">
+    <title>Тесты</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main {
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .no-tests {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:if="${test}">
+    <div th:replace="~{blocks/header_2 :: header}"></div>
+</div>
+<div th:if="${not test}">
+    <div th:replace="~{blocks/header :: header}"></div>
+</div>
+
+<div class="container">
+    <div class="main">
+        <div th:if="${availableTests.size() == 0}" class="no-tests">
+            <h3>Эксперт еще не назначил вам прохождение тестов</h3>
+        </div>
+
+        <div th:each="test : ${availableTests}">
+            <a th:href="'/tests/test_' + ${test.getId()}">
+                <h3 th:text="${test.getName()}"></h3>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

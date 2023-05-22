@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--Для всех авторизованных пользователей представляется список профессий. Если нажать на одну, перекинет на страницу подробностей: с описанием и топом 10 прилагательных(последнее в процессе)-->
+<head>
+    <link rel="stylesheet" type="text/css" href="test_design_style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профессии</title>
+</head>
+
+<body>
+<div th:if="${test}">
+    <div th:replace="~{blocks/header_2 :: header}"></div>
+</div>
+<div th:if="${not test}">
+    <div th:replace="~{blocks/header :: header}"></div>
+</div>
+<div class="main">
+
+    <a href="/occupation/add" id="add">Добавить профессию</a><br><br>
+    <div th:each="line : ${occupations}">
+        <a th:href="'/occupation/' + ${line.getId()}" th:text="${line.getName()}" style="display: inline-block;"></a>
+        <div style="display: inline-block;">
+            <span th:if="${ratedOccupations.contains(line.getId())}" th:text="'Оценено экспертами'"></span>
+            <span th:unless="${ratedOccupations.contains(line.getId())}" th:text="'В процессе проверки экспертами'"></span>
+        </div>
+    </div>
+
+
+
+</div>
+
+</body>
+</html>

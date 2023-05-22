@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--Детали профессии, где и будет описание с рейтингом прилагательных-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:if="${test}">
+    <div th:replace="~{blocks/header_2 :: header}"></div>
+</div>
+<div th:if="${not test}">
+    <div th:replace="~{blocks/header :: header}"></div>
+</div>
+<div class="main">
+    <h2 th:text="${occupation.getName()}"></h2>
+    <h3 th:text="${occupation.getDescription()}"></h3>
+
+    <div class="check" th:if="${message != null}">
+        <h3 th:text="${message}"></h3>
+    </div>
+    <input type="hidden" id="count" th:data-value="${allAnswersCount}"/>
+
+    <div th:each="adj : ${adjectiveIds}">
+        <h3 th:text="${adj.getName() + ' ' + adj.getCount()*100/allAnswersCount + '%'}"></h3>
+    </div>
+</div>
+
+</body>
+</html>

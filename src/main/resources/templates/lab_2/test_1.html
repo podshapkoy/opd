@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Тест на реакцию</title>
+    <style>
+        #circle {
+            width: 18rem;
+            height: 18rem;
+            border-radius: 50%;
+            background-color: white;
+            margin: 5rem auto 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .squares-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .squares {
+            margin: 0 1.5rem;
+            width: 18rem;
+            height: 9rem;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .squares:hover {
+            background-color: #ddd;
+        }
+
+        .square-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+
+        #message {
+            margin: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
+            color: white;
+            background-color: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #square_1 {
+            background: turquoise;
+            color: white;
+        }
+
+        #square_2 {
+            background: goldenrod;
+            color: white;
+        }
+
+        #square_3 {
+            background: orangered;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests}"></div>
+<div class="main">
+    <div id="message"></div>
+    <div id="circle"></div>
+    <div id="time"></div>
+    <div class="squares-container">
+        <div id="square_1" class="squares">
+            <div class="square-text">Нажмите Z</div>
+        </div>
+        <div id="square_2" class="squares">
+            <div class="square-text">Нажмите X</div>
+        </div>
+        <div id="square_3" class="squares">
+            <div class="square-text">Нажмите C</div>
+        </div>
+    </div>
+    <script>
+        let timeTaken = 0;
+        let answers = [];
+        let message;
+        let correctAnswers = 0;
+        let divMessage = document.getElementById("message");
+        let circle = document.getElementById("circle");
+        let circleClicked = false;
+        let firstTime = true;
+        let startTime, reactionTime;
+        let timeToChange = 5000; // 5 секунд
+
+        setTimeout(function () {
+            let timer = setInterval(function () {
+                timeToChange = 1500; // Интервал изменения цвета после первого изменения
+                circle.style.backgroundColor = getRandomColor();
+                startTime = new Date().getTime();
+                circleClicked = false;
+
+                setTimeout(function () {
+                    if (!circleClicked && circle.style.backgroundColor === message) {
+                        timeTaken+=1500;
+                        console.log("Опоздал");
+
+                        // Добавьте здесь любой код, который вам нужен для обработки случая, когда пользователь не нажал кнопку вовремя
+                    }
+                }, 1450); // Проверка времени реакции через 1 секунду
+            }, 1500);
+        }, 5000);
+
+
+        if (firstTime) {
+            message = getRandomColorMust(null)
+            firstTime = false;
+        } else {
+            console.log(message);
+            message = getRandomColorMust(message);
+        }
+        divMessage.innerHTML = "Нажмите X или Z, или C, когда круг будет " + message + " цвета";
+
+        document.addEventListener("keydown", function (event) {
+            if ((((event.key === "x" || event.key === "X" || event.key === "ч" || event.key === "Ч") && message === "goldenrod") ||
+                ((event.key === "z" || event.key === "Z" || event.key === "я" || event.key === "Я") && message === "turquoise") ||
+                ((event.key === "c" || event.key === "C" || event.key === "с" || event.key === "С") && message === "orangered")) && circle.style.backgroundColor === message && !circleClicked) {
+                reactionTime = new Date().getTime() - startTime;
+                answers.push(reactionTime);
+                timeTaken+=reactionTime;
+                correctAnswers++;
+                updateProgressBar();
+                circleClicked = true;
+            }
+
+            if (circleClicked) {
+                message = getRandomColorMust(message);
+            }
+            divMessage.innerHTML = "Нажмите X или Z, или C, когда круг будет " + message + " цвета";
+
+
+            if (answers.length === 3) {
+                showResult()
+            }
+        });
+
+        function getRandomColor() {
+            let colors = ["red", "blue", "turquoise", "goldenrod", "orangered"];
+            let randomIndex = Math.floor(Math.random() * colors.length);
+            circleClicked = false;
+            return colors[randomIndex];
+        }
+
+        function getRandomColorMust(colorNow) {
+            if (colorNow === null) {
+                let colors = ["turquoise", "goldenrod", "orangered"];
+                let randomIndex = Math.floor(Math.random() * colors.length);
+                circleClicked = false;
+                return colors[randomIndex];
+            } else {
+                let colors = ["turquoise", "goldenrod", "orangered"];
+                colors = colors.filter(function (item) {
+                    return item != colorNow
+                })
+                let randomIndex = Math.floor(Math.random() * colors.length);
+                circleClicked = false;
+                return colors[randomIndex];
+            }
+        }
+        function showResult(){
+            // Перенаправляем на другую страницу
+            localStorage.setItem('answers', JSON.stringify(answers));
+            localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+            localStorage.setItem('timeTaken', JSON.stringify(timeTaken))
+            window.location.replace('/tests/test_1/test_result ');
+        }
+    </script>
+</div>
+</body>
+</html>

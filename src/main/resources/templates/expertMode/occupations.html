@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--Экспертная страничка профессий, здесь он выбирает ту, которую хочет оценить прилагательными из пвк-->
+<head>
+    <meta charset="UTF-8">
+    <title>Профессии</title>
+</head>
+<body>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<div class="main">
+    <div th:each="occupation : ${allOccupations}" >
+        <a th:href="'/expert/grading_occupation/' + ${occupation.getId()}" th:text="${occupation.getName()}" style="display: inline-block;"></a>
+            <div style="display: inline-block;">
+                <span th:if="${ratedOccupations.contains(occupation.getId())}" th:text="'checked'"></span>
+                <span th:unless="${ratedOccupations.contains(occupation.getId())}" th:text="'unchecked'"></span>
+            </div>
+
+    </div>
+
+</div>
+</body>
+</html>

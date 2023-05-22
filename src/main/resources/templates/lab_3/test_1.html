@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #circle-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            background-color: lightgray;
+            border-radius: 50%;
+            border: 1px solid black;
+
+        }
+
+        #circle {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: red;
+            transform: translate(-50%, -50%);
+        }
+
+        #star {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background-color: yellow;
+            transform: translate(50%, -50%);
+        }
+    </style>
+</head>
+<body>
+<div id="circle-container">
+    <div id="circle"></div>
+    <div id="star"></div>
+</div>
+
+<script>
+    let timeTaken =0;
+    let circleSpeed;
+    function updateSpeed(){
+        speed = [0.5,1,1.1,1.3,1.5,1.7,2,2.5]
+        circleSpeed = speed[Math.floor(Math.random() * speed.length)]
+    } document.addEventListener('DOMContentLoaded', function() {
+        var circleContainer = document.getElementById('circle-container');
+        var circle = document.getElementById('circle');
+        var star = document.getElementById('star');
+        var reactionTime = 0;
+
+        var circlePosition = 0;
+        updateSpeed();
+        //circleSpeed = 1;
+
+        function updateCircle() {
+            var radius = circleContainer.offsetWidth / 2;
+            var angle = (circlePosition / 180) * Math.PI;
+            var circleX = radius * Math.cos(angle) + radius;
+            var circleY = radius * Math.sin(angle) + radius;
+
+            circle.style.left = circleX + 'px';
+            circle.style.top = circleY + 'px';
+
+            if (circlePosition >= star.offsetLeft - circle.offsetWidth) {
+                reactionTime = performance.now();
+            }
+
+            if (circlePosition >= 360) {
+
+                circlePosition = 0;
+            }
+
+            circlePosition += circleSpeed;
+
+            requestAnimationFrame(updateCircle);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                if (reactionTime !== 0) {
+                    var userReactionTime = performance.now() - reactionTime;
+                    console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
+                    updateSpeed();
+                    timeTaken+=reactionTime;
+                } else {
+                    console.log('Промах! Нажмите пробел, когда круг проходит звездочку.');
+                }
+                reactionTime = 0;
+            }
+        });
+
+        updateCircle();
+    });
+</script>
+</body>
+</html>

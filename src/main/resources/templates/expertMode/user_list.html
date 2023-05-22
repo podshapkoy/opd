@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--страничка, на которой эксперт выбирает пользователя, которому даст возможность пройти определенный тест. В процессе-->
+<head>
+    <meta charset="UTF-8">
+    <title>Все пользователи</title>
+</head>
+<body>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<div class="main">
+    <div th:each="user : ${allUsers}">
+        <a th:href="'/expert/send_test/user_'+${user.getId()}">
+            <h3 th:text="${user.getUsername()}+' '+ ${user.getEmail()}+' '+${user.getAge()}+' лет '+${user.getGender()}"></h3>
+        </a>
+    </div>
+</div>
+</body>
+</html>

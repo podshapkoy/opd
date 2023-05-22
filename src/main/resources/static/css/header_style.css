@@ -1,0 +1,156 @@
+div#header {
+    margin: 0;
+    padding: 20px;
+    background-color: rgba(68, 72, 29, 0.8);
+    font-family: Courier, monospace;
+    text-align: center;
+    border-radius: 20px;
+}
+div.button>a, a#add,a.button{
+    display: inline-block;
+    padding: 12px 24px;
+    margin-left: 10px;
+    font-size: 25px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-family: Courier, monospace;
+    text-decoration: none;
+    color: white;
+    border: none;
+    background-color: transparent;
+    border-radius: 20px;
+    text-transform: uppercase;
+    transition: transform 0.3s;
+}
+div.button a:last-child {
+    margin-left: 0;
+}
+
+div.button a:hover {
+    transform: scale(1.1);
+    background-color: transparent;
+}
+body{
+    text-align: center;
+    font-family: Courier, monospace;
+    background-color: #2d3112;
+    background-attachment: fixed;
+}
+div.main{
+    border-radius: 10px;
+    background-color: rgb(240, 248, 255, 0.8);
+    margin-top: 90px;
+    text-align: center;
+    font-family: Courier, monospace;
+    font-size: larger;
+
+}
+div#main{
+    background-color: rgb(240, 248, 255, 0.8);
+    margin-top: 100px;
+    text-align: center;
+    font-family: Courier, monospace;
+    font-size: larger;
+
+}
+div#autorization{
+    text-align: right;
+    letter-spacing: 40px;
+    margin-right: 40px;
+}
+
+form#reg{
+    margin-top: 10px;
+}
+.checkbox-list {
+    -webkit-column-count: 2; /* for Safari and Chrome */
+    -moz-column-count: 2; /* for Firefox */
+    column-count: 2;
+    text-align: left;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+label.checkbox {
+    display: inline-block;
+}
+div.checkbox{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+canvas#chart, script {
+    width: 10px;
+    height: 10px;
+}
+button[type="submit"] {
+    font-family: Courier, monospace;
+    display: inline-block;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #2e572e;
+    cursor: pointer;
+    transition: background-color ease-in 0.3s;
+    padding: 5px;
+}
+button[type="submit"]:hover {
+    background-color: rgba(46, 87, 46, 0.88);
+}
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    font-family: Courier, monospace;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #2e572e;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: rgba(46, 87, 46, 0.88);
+}
+.error {
+    border: 1px solid red;
+}
+
+form {
+    font-family: Courier, monospace;
+    font-size: 25px;
+    margin-top: 20px;
+}
+
+label {
+    font-family: Courier, monospace;
+    font-size: 25px;
+    display: block;
+    margin-bottom: 10px;
+}
+a {
+    font-weight: 400;
+    font-size: 2rem;
+    color: #424f4f;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #007bff;
+}

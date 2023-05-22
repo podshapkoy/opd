@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Reaction Time Test</title>
+    <style>
+        .circle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0 10px;
+            transition: background-color 0.5s;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests}"></div>
+<div class="main">
+    <div class="container">
+        <h1>Нажмите на space, когда круг загорится красным цветом</h1>
+    <div class="circle-container">
+        <div id="circle_1" class="circle"></div>
+        <div id="circle_2" class="circle"></div>
+        <div id="circle_3" class="circle"></div>
+    </div>
+    </div>
+    <script>
+        let answers = [];
+        // let startTime = new Date().getTime();
+        let timeTaken = 0;
+        let circleClicked = false;
+        let firstTime = true;
+        let correctAnswers = 0;
+
+        function changeCircleColor() {
+
+            // Выбираем случайный круг
+            let circles = document.getElementsByClassName("circle");
+            let randomIndex = Math.floor(Math.random() * circles.length);
+            let randomCircle = circles[randomIndex];
+            if (!circleClicked && !firstTime) {
+                firstTime = false;
+                let endTime = new Date();
+                let reactionTime = endTime - startTime;
+                timeTaken += reactionTime;
+                // circleClicked = true;
+                console.log("Reaction time:", reactionTime, "ms");
+                answers.push(reactionTime)
+                correctAnswers++;
+                updateProgressBar();
+            }
+            if (answers.length === 7) {
+                // Перенаправляем на другую страницу
+                localStorage.setItem('timeTaken', JSON.stringify(timeTaken));
+                localStorage.setItem('answers', JSON.stringify(answers));
+                localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+                window.location.replace('/tests/test_4/test_result ');
+            }
+            // Изменяем его цвет на красный на 1 секунду
+            randomCircle.style.backgroundColor = "red";
+            circleClicked = false;
+
+
+            startTime = new Date();
+            // Обработчик события нажатия на клавишу пробел
+            document.addEventListener("keydown", function (event) {
+                if (event.code === "Space" && (randomCircle.style.backgroundColor === "red" || randomCircle.style.backgroundColor === "rgba(255, 255, 255, 0.1)") && !circleClicked) {
+                    circleClicked = true;
+                    let endTime = new Date().getTime();
+                    let reactionTime = endTime - startTime;
+                    timeTaken += reactionTime;
+                    console.log("Reaction time:", reactionTime, "ms");
+                    answers.push(reactionTime)
+                    correctAnswers++;
+                    updateProgressBar();
+                }
+            });
+            if (answers.length === 7) {
+                // Перенаправляем на другую страницу
+                localStorage.setItem('timeTaken', JSON.stringify(timeTaken));
+                localStorage.setItem('answers', JSON.stringify(answers));
+                localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+                window.location.replace('/tests/test_4/test_result ');
+            }
+
+            setTimeout(function () {
+                // Возвращаем его в прозрачное состояние
+                randomCircle.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+
+                firstTime = false;
+            }, 1000);
+        }
+
+        // Запускаем функцию каждые 10 секунд
+        setInterval(changeCircleColor, 5000);
+    </script>
+</div>
+</body>
+</html>

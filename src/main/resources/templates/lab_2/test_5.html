@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Звуковой сигнал и оценка времени реакции</title>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests}"></div>
+<h1>Нажмите на space, когда услышите звук</h1>
+
+<audio class="audio" src="http://localhost:8081/audio/chest_open.mp3" preload="auto"></audio>
+<audio class="audio" src="http://localhost:8081/audio/death.mp3" preload="auto"></audio>
+<audio class="audio" src="http://localhost:8081/audio/hit_sound.mp3" preload="auto"></audio>
+<audio class="audio" src="http://localhost:8081/audio/villager.mp3" preload="auto"></audio>
+<audio class="audio" src="http://localhost:8081/audio/zombie.mp3" preload="auto"></audio>
+
+
+<script>``
+    let timeTaken = 0;
+    let answers = [];
+    let startTime;
+    let clicked = false;
+    let firstTime = true;
+    let correctAnswers = 0;
+
+    // Функция для воспроизведения звукового сигнала
+    function playSound() {
+        let audio = document.getElementsByClassName('audio');
+        let randomIndex = Math.floor(Math.random() * audio.length);
+        let randomAudio = audio[randomIndex];
+        if (!clicked && !firstTime) {
+            firstTime = false;
+            let endTime = new Date();
+            let reactionTime = endTime - startTime;
+            console.log("Reaction time:", reactionTime, "ms");
+            timeTaken+=reactionTime;
+            answers.push(reactionTime)
+            correctAnswers++;
+            updateProgressBar();
+        }
+        if (answers.length === 7) {
+            // Перенаправляем на другую страницу
+            localStorage.setItem('answers', JSON.stringify(answers));
+            localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+            window.location.replace('/tests/test_5/test_result ');
+        }
+        randomAudio.play();
+        clicked = false;
+        startTime = new Date();
+        // Обработчик события нажатия на клавишу пробел
+        document.addEventListener("keydown", function (event) {
+            if (event.code === "Space" && !clicked) {
+                clicked = true;
+                let endTime = new Date();
+                let reactionTime = endTime - startTime;
+                timeTaken+=reactionTime;
+                console.log("Reaction time:", reactionTime, "ms");
+                answers.push(reactionTime)
+                correctAnswers++;
+                updateProgressBar();
+            }
+        });
+        if (answers.length === 7) {
+            // Перенаправляем на другую страницу
+            localStorage.setItem('timeTaken', JSON.stringify(timeTaken));
+            localStorage.setItem('answers', JSON.stringify(answers));
+            localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+            window.location.replace('/tests/test_4/test_result ');
+        }
+        firstTime = false;
+    }
+
+    // Функция для генерации случайного промежутка времени
+    function getRandomTimeInterval() {
+        let minInterval = 5000; // 5 секунд
+        let maxInterval = 10000; // 10 секунд
+        return Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
+    }
+
+    setInterval(playSound, getRandomTimeInterval());
+</script>
+</body>
+</html>

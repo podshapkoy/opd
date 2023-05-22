@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--Главная страница сайта-->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подключение CSS к HTML</title>
+    <style>
+        .slider {
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .slider_1 {
+            width: 20rem;
+            height: 8rem;
+            margin: 20px;
+            background: rgba(46, 87, 46, 0.74);
+            opacity: 0;
+            border-radius: 15px;
+            animation: slideLeft 12s infinite;
+            animation-delay: var(--delay);
+            animation-fill-mode: both;
+            animation-timing-function: linear;
+        }
+
+        @keyframes slideLeft {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            40% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            90% {
+                transform: translateX(-100%);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:if="${test}">
+    <div th:replace="~{blocks/header_2 :: header}"></div>
+</div>
+<div th:if="${not test}">
+    <div th:replace="~{blocks/header_3 :: header}"></div>
+</div>
+<div class="container">
+    <div class="slider">
+        <div class="slider_1" style="--delay: 0s;">
+            <span>Милый котик</span>
+        </div>
+        <div class="slider_1" style="--delay: 2s;">
+            <span>Симпатичный песик</span>
+        </div>
+        <div class="slider_1" style="--delay: 4s;">
+            <span>Прекрасный зайчик</span>
+        </div>
+        <div class="slider_1" style="--delay: 6s;">
+            <span>Милая енотка</span>
+        </div>
+        <div class="slider_1" style="--delay: 8s;">
+            <span>Чудесная лисичка</span>
+        </div>
+        <div class="slider_1" style="--delay: 10s;">
+            <span>Очаровательный пандик</span>
+        </div>
+        <div class="slider_1" style="--delay: 12s;">
+            <span>Симпатичная уточка</span>
+        </div>
+    </div>
+    <div class="main">
+    </div>
+    <script>
+        const sliderItems = document.querySelectorAll('.slider_1');
+
+        function initializeSlider() {
+            sliderItems.forEach((item, index) => {
+                item.style.animationDelay = index * 2 + "s";
+                item.style.animationPlayState = "running";
+                if (index > 2) {
+                    item.style.opacity = "0";
+                }
+            });
+        }
+
+        initializeSlider();
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Назначение тестов для прохождение</title>
+</head>
+<body>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<div class="main">
+    <h3 th:text="${user.getUsername()}+' '+ ${user.getEmail()}+' '+${user.getAge()}+' лет '+${user.getGender()}"></h3>
+    <div id="availableTests">
+        <div th:if="${availableTests.size() != 0}">
+            <h3>Назначенные тесты</h3>
+        </div>
+        <div th:unless="${availableTests.size() != 0}">
+            <h3>Данному пользователю еще не были назначены тесты</h3>
+        </div>
+        <div th:each="test : ${availableTests}">
+            <a th:text="${test.getName()}" th:href="'/expert/send_test/user_' + ${user.getId()} + '/test_'+${test.getId()}+'_result'"></a>
+        </div>
+    </div>
+
+    <div id="notAvailableTests">
+        <div th:if="${notAvailableTests.size() != 0}">
+            <h3>Готовые к назначению тесты</h3>
+        </div>
+        <div th:unless="${notAvailableTests.size() != 0}">
+            <h3>Отсутствуют тесты, которые можно предложить пользователю</h3>
+        </div>
+
+        <form th:action="'/expert/send_test/user_'+${user.getId()}" method="post"
+              name="form" th:object="${result}">
+            <div class="checkbox-list">
+
+                <div th:each="test : ${notAvailableTests}">
+                    <label>
+                        <input type="checkbox" th:name="'selectedIds'" th:value="${test.getId()}"
+                               th:text="${test.getName() + ' ' + test.getDescription()}">
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="bt bt-success">Отправить тесты</button>
+        </form>
+
+
+<!--        <div th:each="test : ${notAvailableTests}">-->
+<!--            <label>-->
+<!--                <input type="checkbox" th:name="'selectedIds'" th:value="${test.getId()}"-->
+<!--                       th:text="${test.getName() + ' ' + test.getDescription()}">-->
+<!--            </label>-->
+<!--        </div>-->
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--Переход в режим эксперта, здесь будут все его функции по тестам и профессиям-->
+    <meta charset="UTF-8">
+    <title>Expert mode</title>
+    <style>
+        h1 {
+            margin: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
+            color: white;
+            background-color: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            order: -1;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/header_2 :: header}"></div>
+<h1>You are chosen</h1>
+<div class="main">
+    <a href="/expert/send_test">Отправить тест выбранному пользователю</a><br>
+    <a href="/expert/see_statistic">Посмотреть статистику результатов тестов всех пользователей</a><br>
+    <a href="/expert/grading_occupation">Оценить профессии по выбранному списку ПВК</a><br>
+</div>
+</body>
+</html>

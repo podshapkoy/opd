@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<!--Профиль пользователя. Будет отображаться информация о нем(мыло, возраст пол и тд). Отсюда можно перейти в режим эксперта, право на это настрою чуть позже-->
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+    <style>
+
+    </style>
+</head>
+<body>
+<div th:if="${test}">
+    <div th:replace="~{blocks/header_2 :: header}"></div>
+</div>
+<div th:if="${not test}">
+    <div th:replace="~{blocks/header :: header}"></div>
+</div>
+
+<div class="main">
+    <p>
+    <div class="button">
+        Welcome back, sir <span th:text="${user.getUsername()}"></span><br>
+        Your email address is <span th:text="${user.getEmail()}"></span><br><br><br>
+        <a href="/expert">Режим эксперта</a><br><br>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="button">Sign out</button>
+
+        </form>
+    </div>
+    </p>
+</div>
+</body>
+</html>
