@@ -72,7 +72,7 @@ public class ExpertController {
         model.addAttribute("occupation", occupation);
         Iterable<Adjective> adjectiveList = adjectiveRepository.findAll();
         model.addAttribute("adjectiveList", adjectiveList);
-        model.addAttribute("result", new result());
+        model.addAttribute("result", new Result());
         String forAdjectiveIds = "SELECT new com.example.Web.AdjectiveCount(adj.name, COUNT(eo.adjective.id)) " +
                 "FROM ExpertsOpinion eo inner join Adjective adj on eo.adjective.id=adj.id " +
                 "WHERE eo.occupation.id = :occupationId " +
@@ -95,7 +95,7 @@ public class ExpertController {
     }
 
     @PostMapping("/expert/grading_occupation/{id}")
-    public String gradeBD(@PathVariable(value = "id") int id, @ModelAttribute("result") result result, Authentication authentication) {
+    public String gradeBD(@PathVariable(value = "id") int id, @ModelAttribute("result") Result result, Authentication authentication) {
         int[] selectedIds = result.getSelectedIds();
         Occupation occupation = occupationRepository.findById(id).get();
         User user = userRepo.findByEmail(authentication.getName());
@@ -126,13 +126,13 @@ public class ExpertController {
         model.addAttribute("notAvailableTests", notAvailableTests);
         System.out.println(availableTests);
         System.out.println(notAvailableTestsS);
-        model.addAttribute("result", new result());
+        model.addAttribute("result", new Result());
         return "expertMode/tests_appointment";
 
     }
 
     @PostMapping("/expert/send_test/user_{id}")
-    public String sentTest(@PathVariable(value = "id") int id, @ModelAttribute("result") result result, Authentication authentication) {
+    public String sentTest(@PathVariable(value = "id") int id, @ModelAttribute("result") Result result, Authentication authentication) {
         int[] selectedIds = result.getSelectedIds();
         for (int testId : selectedIds) {
             availableTestsRepo.save(new AvailableTests(userRepo.findById(id).get(), testsRepo.findById(testId).get()));
@@ -143,8 +143,7 @@ public class ExpertController {
 
     @GetMapping("/expert/send_test/user_{user_id}/test_{test_id}_result")
     public String userResult(@PathVariable(value = "user_id") int user_id, Model model, @PathVariable(value = "test_id") int test_id) {
-        List<result> testResult_10 = new ArrayList<>();
-        List<result> testResult = new ArrayList<>();
+        List<Result> testResult = new ArrayList<>();
         String us = "select fin.id from FinishedSessionUserTest fin where fin.user.id=:id and fin.tests.id=:test_id ORDER BY fin.id DESC";
         List<Integer> finishedUserTest = entityManager.createQuery(us, Integer.class)
                 .setParameter("id", user_id)
@@ -152,20 +151,19 @@ public class ExpertController {
                 .getResultList();
 
         for (int i : finishedUserTest) {
-            String oneTestResult_10S = "select tes.result_ms from AllTestsResult tes where tes.finishedSessionUserTest.id=:session_id";
-            List<String> oneTestResult_10 = entityManager.createQuery(oneTestResult_10S, String.class)
+            String oneTestResultS = "select tes.result from AllTestsResult tes where tes.finishedSessionUserTest.id=:session_id";
+            List<Double> oneTestResult = entityManager.createQuery(oneTestResultS, Double.class)
                     .setParameter("session_id", i)
                     .getResultList();
-            if (testResult_10.size() < 10) {
-                testResult_10.add(new result(i, oneTestResult_10));
-                testResult.add(new result(i, oneTestResult_10));
-            } else {
-                testResult.add(new result(i, oneTestResult_10));
+            String oneTestResultLabelS = "select tes.label from AllTestsResult tes where tes.finishedSessionUserTest.id=:session_id";
+            List<String> oneTestResultLabel = entityManager.createQuery(oneTestResultLabelS, String.class)
+                    .setParameter("session_id", i)
+                    .getResultList();
+            for(int j = 0; j<oneTestResult.size();j++){
+                testResult.add(new Result(oneTestResult, oneTestResultLabel));
             }
         }
-        Collections.reverse(testResult_10);
         Collections.reverse(testResult);
-        model.addAttribute("oneTestResult_10", testResult_10);
         model.addAttribute("oneTestResult", testResult);
         return "expertMode/user_result";
     }

@@ -55,14 +55,14 @@ public class MainController {
         model.addAttribute("occupations", occupations);
         Iterable<Adjective> adjectiveList = adjectiveRepository.findAll();
         model.addAttribute("adjectiveList", adjectiveList);
-        model.addAttribute("result", new result());
+        model.addAttribute("result", new Result());
         boolean test = authentication != null && authentication.isAuthenticated();
         model.addAttribute("test", test);
         return "Occupation_add";
     }
 
     @PostMapping("/occupation/add")
-    public String occupationAdd(@RequestParam String occupation_name, @RequestParam String description, @ModelAttribute("result") result result, Authentication authentication) {
+    public String occupationAdd(@RequestParam String occupation_name, @RequestParam String description, @ModelAttribute("result") Result result, Authentication authentication) {
         Occupation occupation = new Occupation(occupation_name, description);
         occupationRepository.save(occupation);
         int[] selectedIds = result.getSelectedIds();

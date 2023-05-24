@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #circle {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0 10px;
+            transition: background-color 0.5s;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<div class="main">
+    <div class="container">
+        <div id="circle"></div>
+    </div>
+</div>
+<script>
+    let circle = document.getElementById('circle');
+    let containerWidth = document.querySelector('.container').clientWidth;
+    let isMoving = false;
+    let direction = 'right';
+    let distance = 100; // Максимальное расстояние, на которое круг перемещается
+
+    function moveCircle() {
+        if (!isMoving) {
+            isMoving = true;
+            let newPosition = getRandomPosition();
+            let newDistance = Math.floor(Math.random() * 10 + 2) * 40;
+
+            if (newPosition === 'left') {
+                circle.style.left = (containerWidth / 2 - newDistance) + 'px';
+                direction = 'left';
+            } else {
+                circle.style.left = (containerWidth / 2 + newDistance) + 'px';
+                direction = 'right';
+            }
+
+            setTimeout(function () {
+                isMoving = false;
+            }, 2000); // Задержка перед остановкой круга
+        }
+    }
+
+    function getRandomPosition() {
+        return Math.random() < 0.5 ? 'left' : 'right';
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (isMoving && event.keyCode === 37 && direction === 'left') {
+            resetCircle();
+        } else if (isMoving && event.keyCode === 39 && direction === 'right') {
+            resetCircle();
+        }
+    });
+
+    function resetCircle() {
+        circle.style.animation = 'reset 1s';
+        circle.style.left = '50%';
+        setTimeout(function () {
+            circle.style.animation = '';
+            isMoving = false;
+        }, 1000);
+    }
+
+    setInterval(moveCircle, Math.random() * 5000 + 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body th:fragment="header">
+
+<script>
+
+    let deviantModule = 0;
+    let deviantPlus = 0;
+    let deviantMinus = 0;
+    let reactionTimes = JSON.parse(localStorage.getItem('reactionTimes'));
+    let missTimes = JSON.parse(localStorage.getItem('missTimes'));
+    let mistakenTimes = JSON.parse(localStorage.getItem('mistakenTimes'))
+    let chosenTime = JSON.parse(localStorage.getItem('chosenTime'));
+
+
+    let moduleElements = reactionTimes.map((num) => Math.abs(num));
+    let minusElements = reactionTimes
+        .filter((num) => num > 0);
+    let plusElements = reactionTimes
+        .filter((num) => num < 0);
+
+    let plusSum = plusElements
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    let minusSum = minusElements
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    let moduleSum = moduleElements
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+    let averageModule = (moduleSum / moduleElements.length).toFixed(2);
+    let averageMinus = (minusSum / minusElements.length).toFixed(2);
+    let averagePlus = (plusSum / plusElements.length).toFixed(2);
+
+    for (let i = 0; i < reactionTimes.length; i++) {
+        if (reactionTimes[i] <= 0) {
+            deviantMinus += Math.pow((reactionTimes[i] - averageMinus), 2);
+        } else {
+            deviantPlus += Math.pow((reactionTimes[i] - averagePlus), 2);
+        }
+        deviantModule += Math.pow((reactionTimes[i] - averageModule), 2);
+    }
+    deviantModule = Math.sqrt(deviantModule / moduleElements.length).toFixed(2);
+    deviantPlus = Math.sqrt(deviantPlus / plusElements.length).toFixed(2);
+    deviantMinus = Math.sqrt(deviantMinus / minusElements.length).toFixed(2);
+    console.log(moduleElements);
+    console.log(plusElements);
+    console.log(minusElements);
+    console.log(averageModule, averageMinus, averagePlus)
+    console.log(deviantModule, deviantMinus, deviantPlus);
+
+    let chartData = {
+        labels: [...Array(reactionTimes.length).keys()].map((num) => num + 1),
+        datasets: [{
+            label: 'Время реакции(мс)',
+            data: reactionTimes,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+    let chartOptions = {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    };
+    let chart = new Chart(document.getElementById('chart'), {
+        type: 'bar',
+        data: chartData,
+        options: chartOptions
+    });
+    let labelsList;
+    let answersList;
+    if (localStorage.getItem('test7') === null) {
+        answersList = [parseFloat(averageMinus), parseFloat(averagePlus), parseFloat(averageModule), parseFloat(deviantMinus), parseFloat(deviantPlus), parseFloat(deviantModule),
+            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / missTimes).toFixed(1)), chosenTime]
+        labelsList = ['Среднее значение по преждевременному ответу', 'Среднее значение по запаздыванию ответа',
+            'Среднее значение ответа по модули', 'Стандарт отклонения по преждевременному ответу', 'Стандарт отклонения по запаздыванию ответа',
+            'Стандарт отклонения ответа по модулю', 'Количество пропусков','Количество неверных нажатий', 'Процент наличия реакции','Выбранное время теста(мин)']
+    } else {
+        let deviantModule_1 = 0;
+        let deviantPlus_1 = 0;
+        let deviantMinus_1 = 0;
+        let reactionTimes_1 = JSON.parse(localStorage.getItem('reactionTimes_1'));
+
+        let moduleElements_1 = reactionTimes_1.map((num) => Math.abs(num));
+        let minusElements_1 = reactionTimes_1
+            .filter((num) => num > 0);
+        let plusElements_1 = reactionTimes_1
+            .filter((num) => num < 0);
+
+        let plusSum_1 = plusElements_1
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let minusSum_1 = minusElements_1
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let moduleSum_1 = moduleElements_1
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+        let averageModule_1 = (moduleSum_1 / moduleElements_1.length).toFixed(2);
+        let averageMinus_1 = (minusSum_1 / minusElements_1.length).toFixed(2);
+        let averagePlus_1 = (plusSum_1 / plusElements_1.length).toFixed(2);
+
+        for (let i = 0; i < reactionTimes_1.length; i++) {
+            if (reactionTimes_1[i] <= 0) {
+                deviantMinus_1 += Math.pow((reactionTimes_1[i] - averageMinus_1), 2);
+            } else {
+                deviantPlus_1 += Math.pow((reactionTimes_1[i] - averagePlus_1), 2);
+            }
+            deviantModule_1 += Math.pow((reactionTimes_1[i] - averageModule_1), 2);
+        }
+        deviantModule_1 = Math.sqrt(deviantModule_1 / moduleElements_1.length).toFixed(2);
+        deviantPlus_1 = Math.sqrt(deviantPlus_1 / plusElements_1.length).toFixed(2);
+        deviantMinus_1 = Math.sqrt(deviantMinus_1 / minusElements_1.length).toFixed(2);
+
+        let deviantModule_2 = 0;
+        let deviantPlus_2 = 0;
+        let deviantMinus_2 = 0;
+        let reactionTimes_2 = JSON.parse(localStorage.getItem('reactionTimes_2'));
+
+        let moduleElements_2 = reactionTimes_2.map((num) => Math.abs(num));
+        let minusElements_2 = reactionTimes_2
+            .filter((num) => num > 0);
+        let plusElements_2 = reactionTimes_2
+            .filter((num) => num < 0);
+
+        let plusSum_2 = plusElements_2
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let minusSum_2 = minusElements_2
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let moduleSum_2 = moduleElements_2
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+        let averageModule_2 = (moduleSum_2 / moduleElements_2.length).toFixed(2);
+        let averageMinus_2 = (minusSum_2 / minusElements_2.length).toFixed(2);
+        let averagePlus_2 = (plusSum_2 / plusElements_2.length).toFixed(2);
+
+        for (let i = 0; i < reactionTimes_2.length; i++) {
+            if (reactionTimes_2[i] <= 0) {
+                deviantMinus_2 += Math.pow((reactionTimes_2[i] - averageMinus_2), 2);
+            } else {
+                deviantPlus_2 += Math.pow((reactionTimes_2[i] - averagePlus_2), 2);
+            }
+            deviantModule_2 += Math.pow((reactionTimes_2[i] - averageModule_2), 2);
+        }
+        deviantModule_2 = Math.sqrt(deviantModule_2 / moduleElements_2.length).toFixed(2);
+        deviantPlus_2 = Math.sqrt(deviantPlus_2 / plusElements_2.length).toFixed(2);
+        deviantMinus_2 = Math.sqrt(deviantMinus_2 / minusElements_2.length).toFixed(2);
+
+        let deviantModule_3 = 0;
+        let deviantPlus_3 = 0;
+        let deviantMinus_3 = 0;
+        let reactionTimes_3 = JSON.parse(localStorage.getItem('reactionTimes_3'));
+
+        let moduleElements_3 = reactionTimes_3.map((num) => Math.abs(num));
+        let minusElements_3 = reactionTimes_3
+            .filter((num) => num > 0);
+        let plusElements_3 = reactionTimes_3
+            .filter((num) => num < 0);
+
+        let plusSum_3 = plusElements_3
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let minusSum_3 = minusElements_3
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        let moduleSum_3 = moduleElements_3
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+        let averageModule_3 = (moduleSum_3 / moduleElements_3.length).toFixed(2);
+        let averageMinus_3 = (minusSum_3 / minusElements_3.length).toFixed(2);
+        let averagePlus_3 = (plusSum_3 / plusElements_3.length).toFixed(2);
+
+        for (let i = 0; i < reactionTimes_3.length; i++) {
+            if (reactionTimes_3[i] <= 0) {
+                deviantMinus_3 += Math.pow((reactionTimes_3[i] - averageMinus_3), 2);
+            } else {
+                deviantPlus_3 += Math.pow((reactionTimes_3[i] - averagePlus_3), 2);
+            }
+            deviantModule_3 += Math.pow((reactionTimes_3[i] - averageModule_3), 2);
+        }
+        deviantModule_3 = Math.sqrt(deviantModule_3 / moduleElements_3.length).toFixed(2);
+        deviantPlus_3 = Math.sqrt(deviantPlus_3 / plusElements_3.length).toFixed(2);
+        deviantMinus_3 = Math.sqrt(deviantMinus_3 / minusElements_3.length).toFixed(2);
+
+
+
+        answersList = [parseFloat(averageMinus), parseFloat(averagePlus), parseFloat(averageModule), parseFloat(deviantMinus), parseFloat(deviantPlus), parseFloat(deviantModule),
+            parseFloat(averageMinus_1), parseFloat(averagePlus_1), parseFloat(averageModule_1), parseFloat(deviantMinus_1), parseFloat(deviantPlus_1), parseFloat(deviantModule_1),
+            parseFloat(averageMinus_2), parseFloat(averagePlus_2), parseFloat(averageModule_2), parseFloat(deviantMinus_2), parseFloat(deviantPlus_2), parseFloat(deviantModule_2),
+            parseFloat(averageMinus_3), parseFloat(averagePlus_3), parseFloat(averageModule_3), parseFloat(deviantMinus_3), parseFloat(deviantPlus_3), parseFloat(deviantModule_3),
+            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / missTimes).toFixed(1)),chosenTime]
+        labelsList = ['Среднее значение по преждевременному ответу(общее)', 'Среднее значение по запаздыванию ответа(общее)',
+            'Среднее значение ответа по модулю(общее)', 'Стандарт отклонения по преждевременному ответу(общее)', 'Стандарт отклонения по запаздыванию ответа(общее)',
+            'Стандарт отклонения ответа по модулю(общее)',
+            'Среднее значение по преждевременному ответу(1 круг)', 'Среднее значение по запаздыванию ответа(1 круг)',
+            'Среднее значение ответа по модулю(1 круг)', 'Стандарт отклонения по преждевременному ответу(1 круг)', 'Стандарт отклонения по запаздыванию ответа(1 круг)',
+            'Стандарт отклонения ответа по модулю(1 круг)',
+            'Среднее значение по преждевременному ответу(2 круг)', 'Среднее значение по запаздыванию ответа(2 круг)',
+            'Среднее значение ответа по модулю(2 круг)', 'Стандарт отклонения по преждевременному ответу(2 круг)', 'Стандарт отклонения по запаздыванию ответа(2 круг)',
+            'Стандарт отклонения ответа по модулю(2 круг)',
+            'Среднее значение по преждевременному ответу(3 круг)', 'Среднее значение по запаздыванию ответа(3 круг)',
+            'Среднее значение ответа по модулю(3 круг)', 'Стандарт отклонения по преждевременному ответу(3 круг)', 'Стандарт отклонения по запаздыванию ответа(3 круг)',
+            'Стандарт отклонения ответа по модулю(3 круг)',
+            'Количество пропусков', 'Количество неверных нажатий', 'Процент наличия реакции','Выбранное время теста(мин)']
+    }
+    console.log(answersList)
+    document.getElementById("result").value = JSON.stringify(answersList);
+    document.getElementById("labels").value = JSON.stringify(labelsList);
+    localStorage.clear()
+</script>
+
+</body>
+</html>

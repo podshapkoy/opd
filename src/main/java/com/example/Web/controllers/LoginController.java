@@ -31,7 +31,6 @@ public class LoginController {
         boolean reg = authentication != null && authentication.isAuthenticated();
         model.addAttribute("reg", reg);
         return "registration";
-
     }
 
     @PostMapping("/registration")

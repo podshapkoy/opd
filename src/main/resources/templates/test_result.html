@@ -27,77 +27,24 @@
 <body>
 <div th:replace="~{blocks/header :: header}"></div>
 <div class="container">
+    <
     <div class="main">
         <div id="message"></div>
         <canvas id="chart" style="width: 30%; height: 40%;"></canvas>
         <form id="reaction-form" th:action="'/tests/test_' + ${testId} + '/test_result'" method="post">
-            <input type="hidden" id="react" name="answers" value="">
-
+            <input type="hidden" id="result" name="answersList" value="">
+            <input type="hidden" id="labels" name="labelsList" value="">
             <button type="submit">Submit</button>
         </form>
+
+        <div th:if="${1<=testId && testId<=5}">
+            <div th:replace="~{tests_results/lab_2 :: header}"></div>
+        </div>
+
+        <div th:if="${6<=testId && testId<=7}">
+            <div th:replace="~{tests_results/lab_3 :: header}"></div>
+        </div>
     </div>
 </div>
-
-<script>
-    let sumAnswers = 0;
-    console.log(localStorage.getItem('message'));
-    let answers = JSON.parse(localStorage.getItem('answers'));
-    let label = JSON.parse(localStorage.getItem('label'));
-    document.getElementById('message').textContent = JSON.parse(localStorage.getItem('message'));
-
-    localStorage.removeItem('answers');
-    localStorage.removeItem('message');
-    localStorage.removeItem('label');
-    let labels = []
-    for (let i = 1; i <= answers.length; i++) {
-        labels.push(i.toString());
-        sumAnswers += +answers[i - 1];
-        console.log(answers[i - 1])
-    }
-
-    let chartData = {
-        labels: labels,
-        datasets: [{
-            label: label,
-            data: answers,
-            backgroundColor: 'rgba(133,154,60,0.19)',
-            borderColor: '#2d3112',
-            borderWidth: 1
-        }]
-    };
-    let chartOptions = {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    };
-    let chart = new Chart(document.getElementById('chart'), {
-        type: 'bar',
-        data: chartData,
-        options: chartOptions
-    });
-    if (localStorage.getItem('aware') != null) {
-        // const count = answers.filter(item => item === '100').length;
-        const timeTaken = (localStorage.getItem('timeTaken')).toString();
-        const percentage = (Math.round((7 / answers.length) * 10000) / 100) + '%';
-
-        answers = [percentage, timeTaken];
-        console.log(answers);
-    } else {
-        console.log(sumAnswers)
-        answers = [Math.round(sumAnswers / answers.length), localStorage.getItem('timeTaken')];
-    }
-
-
-    localStorage.removeItem('aware')
-    document.getElementById("react").value = JSON.stringify(answers);
-    if (localStorage.getItem('message') != null) {
-        document.getElementById('message').textContent = JSON.parse(localStorage.getItem('message'));
-        console.log(JSON.parse(localStorage.getItem('message')))
-    }
-</script>
 </body>
 </html>

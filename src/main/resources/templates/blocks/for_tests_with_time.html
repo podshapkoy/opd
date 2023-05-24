@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/for_tests.css">
+</head>
+<body>
+
+<div class="progress-bar">
+    <div class="progress-bar-inner" id="progress-bar"></div>
+</div>
+
+<script>
+    function updateProgressBar() {
+        let progressBar = document.getElementById('progress-bar');
+        let correctPercentage = ((new Date().getTime() - startTime) / (0.50 * 60000) * 100);
+        // console.log(correctPercentage);
+        progressBar.style.width = correctPercentage + '%';
+        // console.log((new Date().getTime() - startTime), (0.50 * 60000))
+        if((new Date().getTime() - startTime)>=(0.50 * 60000)){
+            showResults();
+        }
+    }
+
+</script>
+</body>
+</html>

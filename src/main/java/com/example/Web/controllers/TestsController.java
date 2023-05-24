@@ -55,15 +55,17 @@ public class TestsController {
     }
 
     @PostMapping("/tests/test_{text}/test_result")
-    public String handleTestResult(@RequestParam("answers") String answersSt, @PathVariable(value = "text") String text, Authentication authentication) throws JsonProcessingException {
+    public String handleTestResult(@RequestParam("answersList") String answersSt, @RequestParam("labelsList") String labelsSt, @PathVariable(value = "text") String text, Authentication authentication) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        List<String> answers = mapper.readValue(answersSt, new TypeReference<List<String>>() {
+        List<Double> answers = mapper.readValue(answersSt, new TypeReference<List<Double>>() {
+        });
+        List<String> labels = mapper.readValue(labelsSt, new TypeReference<List<String>>() {
         });
         FinishedSessionUserTest finishedSessionUserTest = new FinishedSessionUserTest(userRepo.findByEmail(authentication.getName()), testsRepo.findById(Integer.parseInt(text)).get());
         System.out.println(finishedSessionUserTest);
         finishedSessionUserTestRepo.save(finishedSessionUserTest);
-        for (String res : answers) {
-            allTestsResultRepo.save(new AllTestsResult(finishedSessionUserTest, res));
+        for (int i = 0; i<answers.size();i++) {
+            allTestsResultRepo.save(new AllTestsResult(finishedSessionUserTest, answers.get(i), labels.get(i)));
         }
         return "redirect:/tests";
     }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body th:fragment="header">
+<script>
+    let sumAnswers = 0;
+    let answersList = [];
+    console.log(localStorage.getItem('message'));
+    let answers = JSON.parse(localStorage.getItem('answers'));
+    let label = JSON.parse(localStorage.getItem('label'));
+    document.getElementById('message').textContent = JSON.parse(localStorage.getItem('message'));
+
+    localStorage.removeItem('answers');
+    localStorage.removeItem('message');
+    localStorage.removeItem('label');
+    let labels = []
+    for (let i = 1; i <= answers.length; i++) {
+        labels.push(i.toString());
+        sumAnswers += +answers[i - 1];
+        console.log(answers[i - 1])
+    }
+
+    let chartData = {
+        labels: labels,
+        datasets: [{
+            label: label,
+            data: answers,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+    let chartOptions = {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    };
+    let chart = new Chart(document.getElementById('chart'), {
+        type: 'bar',
+        data: chartData,
+        options: chartOptions
+    });
+    if (localStorage.getItem('aware') != null) {
+        const timeTaken = (localStorage.getItem('timeTaken'));
+        const percentage = (Math.round((7 / answers.length) * 10000) / 100);
+
+        answersList = [percentage, timeTaken];
+        labelsList = ['Среднее значение', 'Затраченное время']
+        console.log(answersList);
+    } else {
+        let x = 0;
+        console.log(sumAnswers)
+        let average = Math.round(sumAnswers / answers.length)
+
+        for (let i = 0; i < answers.length; i++) {
+            x += Math.pow((answers[i] - average), 2);
+        }
+        answersList = [average, parseFloat((Math.sqrt(x / answers.length)).toFixed(2)), localStorage.getItem('timeTaken')];
+        labelsList = ['Среднее значение', 'Стандарт отклонения', 'Затраченное время']
+        console.log(x, answers.length)
+    }
+
+
+    localStorage.removeItem('aware')
+    document.getElementById("result").value = JSON.stringify(answersList);
+    document.getElementById("labels").value = JSON.stringify(labelsList);
+    if (localStorage.getItem('message') != null) {
+        document.getElementById('message').textContent = JSON.parse(localStorage.getItem('message'));
+        console.log(JSON.parse(localStorage.getItem('message')))
+    }
+    localStorage.clear()
+</script>
+</body>
+</html>

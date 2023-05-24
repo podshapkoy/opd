@@ -15,11 +15,13 @@ public class AllTestsResult {
     @JoinColumn(referencedColumnName = "id")
     private FinishedSessionUserTest finishedSessionUserTest;
 
-    private String result_ms;
+    private Double result;
+    private String label;
 
-    public AllTestsResult(FinishedSessionUserTest finishedSessionUserTest, String result_ms) {
+    public AllTestsResult(FinishedSessionUserTest finishedSessionUserTest, Double result, String label) {
         this.finishedSessionUserTest = finishedSessionUserTest;
-        this.result_ms = result_ms;
+        this.result = result;
+        this.label = label;
     }
 
     public AllTestsResult() {
@@ -42,11 +44,11 @@ public class AllTestsResult {
         this.finishedSessionUserTest = finishedSessionUserTest;
     }
 
-    public String getResult_ms() {
-        return result_ms;
+    public Double getResult_ms() {
+        return result;
     }
 
-    public void setResult_ms(String result_ms) {
-        this.result_ms = result_ms;
+    public void setResult_ms(Double result_ms) {
+        this.result = result_ms;
     }
 }

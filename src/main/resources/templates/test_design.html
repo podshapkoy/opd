@@ -17,38 +17,14 @@
             width: 20rem;
             height: 8rem;
             margin: 20px;
-            background: rgba(46, 87, 46, 0.74);
-            opacity: 0;
+            background: rgba(68, 72, 29, 0.56);
             border-radius: 15px;
-            animation: slideLeft 12s infinite;
-            animation-delay: var(--delay);
-            animation-fill-mode: both;
-            animation-timing-function: linear;
+            transition: opacity 1s linear;
         }
-
-        @keyframes slideLeft {
-            0% {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            40% {
-                opacity: 1;
-            }
-            50% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            90% {
-                transform: translateX(-100%);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
+        .slider_1 img {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50px;
         }
     </style>
 </head>
@@ -61,44 +37,50 @@
 </div>
 <div class="container">
     <div class="slider">
-        <div class="slider_1" style="--delay: 0s;">
-            <span>Милый котик</span>
+        <div class="slider_1">
+            <img url="img/cat1.jpg"><span>Милый котик</span>
         </div>
-        <div class="slider_1" style="--delay: 2s;">
-            <span>Симпатичный песик</span>
+        <div class="slider_1">
+            <img url="../img/cat2.jpg"><span>Симпатичный песик</span>
         </div>
-        <div class="slider_1" style="--delay: 4s;">
-            <span>Прекрасный зайчик</span>
+        <div class="slider_1">
+            <img url="../img/cat3.jpg"><span>Милый котик</span>
         </div>
-        <div class="slider_1" style="--delay: 6s;">
-            <span>Милая енотка</span>
-        </div>
-        <div class="slider_1" style="--delay: 8s;">
-            <span>Чудесная лисичка</span>
-        </div>
-        <div class="slider_1" style="--delay: 10s;">
-            <span>Очаровательный пандик</span>
-        </div>
-        <div class="slider_1" style="--delay: 12s;">
-            <span>Симпатичная уточка</span>
+        <div class="slider_1">
+            <img url="../img/cat4.jpg"><span>Симпатичный песик</span>
         </div>
     </div>
     <div class="main">
     </div>
     <script>
         const sliderItems = document.querySelectorAll('.slider_1');
+        const itemWidth = sliderItems[0].offsetWidth;
+        const itemMargin = 20;
+        const totalWidth = itemWidth + itemMargin;
+        const sliderContainer = document.querySelector('.slider');
+        const sliderContainerWidth = sliderContainer.offsetWidth;
 
-        function initializeSlider() {
-            sliderItems.forEach((item, index) => {
-                item.style.animationDelay = index * 2 + "s";
-                item.style.animationPlayState = "running";
-                if (index > 2) {
-                    item.style.opacity = "0";
-                }
-            });
+        let currentIndex = 0;
+
+        function showNextItem() {
+            sliderItems[currentIndex].style.opacity = 0;
+            currentIndex = (currentIndex + 1) % sliderItems.length;
+            sliderItems[currentIndex].style.opacity = 1;
         }
 
-        initializeSlider();
+        function showItemsOneByOne() {
+            let count = 0;
+            const interval = setInterval(() => {
+                sliderItems[count].style.opacity = 1;
+                count++;
+                if (count === sliderItems.length) {
+                    clearInterval(interval);
+                    setInterval(showNextItem, 4000);
+                }
+            }, 2000);
+        }
+
+        showItemsOneByOne();
     </script>
 </body>
 </html>

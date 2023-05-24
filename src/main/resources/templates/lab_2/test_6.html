@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Звуковой сигнал и оценка времени реакции</title>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            color: white;
+        }
+
         #circle-container {
             position: relative;
             width: 300px;
             height: 300px;
-            background-color: lightgray;
+            background-color: rgba(211, 211, 211, 0.70);
             border-radius: 50%;
-            border: 1px solid black;
-
         }
 
         #circle {
@@ -32,84 +40,150 @@
             background-color: yellow;
             transform: translate(50%, -50%);
         }
+
+        #test-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #words {
+            margin-bottom: 10px;
+        }
+
+        #chosenTimeS {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-<div id="circle-container">
-    <div id="circle"></div>
-    <div id="star"></div>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<div id="test-container">
+    <h1>Нажмите на space, когда круг дойдет до отметки</h1>
+    <div id="circle-container">
+        <div id="circle"></div>
+        <div id="star"></div>
+    </div>
+    <label id="words">Выберите желаемое время прохождения теста (от 2 до 45 минут):
+        <input type="text" id="chosenTimeS" required/>
+    </label>
+    <button id="startButton">Начать</button>
 </div>
 
 <script>
     let timeTaken = 0;
     let circleSpeed;
-    let correctAnswers = 0;
     let clicked = false;
-    let firstTime = true;
+    let chosenTimeS = document.getElementById('chosenTimeS');
+    let words = document.getElementById('words');
+    let testMode = false;
+    let startTime;
+    let reactionTimes = [];
+    let missTimes = 0;
+    let chosenTime;
+    let wholeCircle = false;
+    let d = [];
+
+    function showResults() {
+        clicked = true;
+        circleSpeed = 0;
+        localStorage.setItem('reactionTimes', JSON.stringify(reactionTimes));
+        localStorage.setItem('missTimes', JSON.stringify(missTimes));
+        localStorage.setItem('chosenTime', JSON.stringify(chosenTime));
+        window.location.replace('/tests/test_6/test_result ');
+
+    }
 
     function updateSpeed() {
-        var speed = [0.5, 1, 1.1, 1.3, 1.5, 1.7, 2, 2.5]
+        let speed = [1]
         circleSpeed = speed[Math.floor(Math.random() * speed.length)]
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var circleContainer = document.getElementById('circle-container');
-        var circle = document.getElementById('circle');
-        var star = document.getElementById('star');
-        var reactionTime = 0;
-        var circlePosition = 0;
+
+        let circleContainer = document.getElementById('circle-container');
+        let circle = document.getElementById('circle');
+        const star = document.getElementById('star');
+        let startButton = document.getElementById('startButton');
+
+        let reactionTime = 0;
+        let circlePosition = 0;
         updateSpeed();
+
         function updateCircle() {
-        var radius = circleContainer.offsetWidth / 2;
-        var angle = (circlePosition / 180) * Math.PI;
-        var circleX = radius * Math.cos(angle) + radius;
-        var circleY = radius * Math.sin(angle) + radius;
+            updateProgressBar()
+            let radius = circleContainer.offsetWidth / 2;
+            let angle = (circlePosition / 180) * Math.PI;
+            let circleX = radius * Math.cos(angle) + radius;
+            let circleY = radius * Math.sin(angle) + radius;
 
-        circle.style.left = circleX + 'px';
-        circle.style.top = circleY + 'px';
+            circle.style.left = circleX + 'px';
+            circle.style.top = circleY + 'px';
 
-        if (!firstTime) {
-            if (circlePosition >= star.offsetLeft + 69 && clicked) {
-                reactionTime = performance.now();
+            if (circlePosition === 180) {
                 clicked = false;
-
-            }
-        } else {
-            if (circlePosition >= star.offsetLeft + 69) {
-                reactionTime = performance.now();
-                firstTime = false;
+                reactionTime = new Date().getTime() + 180 * 8.3 / circleSpeed;
+            } else if (circlePosition === 360) {
+                if (wholeCircle) {
+                    missTimes++;
+                }
+                reactionTime = new Date().getTime();
+                wholeCircle = true;
                 clicked = false;
-            }
-        }
-        if (circlePosition >= 360) {
-
-            circlePosition = 0;
-        }
-
-        circlePosition += circleSpeed;
-
-        requestAnimationFrame(updateCircle);
-    }
-
-    document.addEventListener('keydown', function (event) {
-        if (event.code === 'Space') {
-            if (reactionTime !== 0 && !clicked) {
-                var userReactionTime = performance.now() - reactionTime;
-                console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
-                clicked = true;
                 updateSpeed();
-                timeTaken += reactionTime;
-                correctAnswers++;
-
-
-            } else {
-                console.log('Промах! Нажмите пробел, когда круг проходит звездочку.');
             }
-            reactionTime = 0;
-        }
-    });
 
-    updateCircle();
+            if (circlePosition >= 360) {
+
+                circlePosition = 0;
+            }
+
+            circlePosition += circleSpeed;
+            if (d.length < 5) {
+                d.push(new Date().getTime() - reactionTime)
+            } else {
+                console.log(d)
+            }
+            // console.log(new Date().getTime() - reactionTime)
+
+            requestAnimationFrame(updateCircle);
+        }
+
+
+        startButton.addEventListener('click', function () {
+            chosenTime = chosenTimeS.value;
+            console.log(chosenTime)
+            if (chosenTime === '' || !(/^\d+$/.test(chosenTime)) || parseInt(chosenTime) < 2 || parseInt(chosenTime) > 45) {
+                alert('Невалидная форма записи')
+            } else {
+                startTime = new Date().getTime();
+                chosenTimeS.style.display = 'none';
+                words.style.display = 'none';
+                testMode = true;
+                startButton.disabled = true; // Чтобы кнопка нельзя было нажать повторно
+                updateCircle();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Space' && testMode) {
+                if (reactionTime !== 0 && !clicked) {
+                    let userReactionTime = new Date().getTime() - reactionTime;
+                    console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
+                    clicked = true;
+                    wholeCircle = false;
+                    reactionTimes.push(userReactionTime)
+
+                } else {
+                    console.log('Промах! Нажмите пробел, когда круг проходит звездочку.');
+                }
+                reactionTime = 0;
+            }
+        });
+
     })
     ;
 </script>
