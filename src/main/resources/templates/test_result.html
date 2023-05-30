@@ -1,49 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--    Страничка для показа графика сразу после прохождения теста. Здесь есть кнопка, которая отправляет результаты в бд-->
     <meta charset="UTF-8">
     <title>Test Result</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        #reaction-form button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 4px;
-            background-color: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #reaction-form button:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
 <div th:replace="~{blocks/header :: header}"></div>
-<div class="container">
-    <
-    <div class="main">
-        <div id="message"></div>
-        <canvas id="chart" style="width: 30%; height: 40%;"></canvas>
-        <form id="reaction-form" th:action="'/tests/test_' + ${testId} + '/test_result'" method="post">
-            <input type="hidden" id="result" name="answersList" value="">
-            <input type="hidden" id="labels" name="labelsList" value="">
-            <button type="submit">Submit</button>
-        </form>
 
-        <div th:if="${1<=testId && testId<=5}">
-            <div th:replace="~{tests_results/lab_2 :: header}"></div>
-        </div>
+<div class="main">
+    <div id="message"></div>
+    <canvas id="chart" style="width: 30%; height: 40%;"></canvas>
+    <form id="reaction-form" th:action="'/tests/test_' + ${testId} + '/test_result'" method="post">
+        <input type="hidden" id="result" name="answersList" value="">
+        <input type="hidden" id="labels" name="labelsList" value="">
+        <button type="submit">Submit</button>
+    </form>
 
-        <div th:if="${6<=testId && testId<=7}">
-            <div th:replace="~{tests_results/lab_3 :: header}"></div>
-        </div>
+    <div th:if="${1<=testId && testId<=5}">
+        <div th:replace="~{tests_results/lab_2 :: header}"></div>
+    </div>
+
+    <div th:if="${6<=testId && testId<=7}">
+        <div th:replace="~{tests_results/lab_3 :: header}"></div>
+    </div>
+    <div th:if="${8<=testId}">
+        <div th:replace="~{tests_results/lab_4 :: header}"></div>
     </div>
 </div>
 </body>

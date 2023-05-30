@@ -5,9 +5,6 @@ div#autorization{
     margin-right: 40px;
 }
 div#autorization>form>button{
-    /*background: rgb(131,58,180);*/
-    background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
-    /*opacity: 0.8;*/
     font-family: "Agency FB Cyrillic";
     font-size: larger;
     width: 100px;
@@ -16,6 +13,12 @@ div#autorization>form>button{
 
 form#reg{
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    color: white;
 }
 body {
     line-height: 1.5;
@@ -40,3 +43,23 @@ h1 {
     font-weight: bold;
     text-align: center;
 }
+#words {
+    margin-bottom: 10px;
+}
+
+#chosenTimeS {
+    margin-bottom: 10px;
+}
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    font-family: Courier, monospace;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 18px;
+    font-weight: bold;
+}
+

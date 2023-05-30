@@ -2,78 +2,151 @@
 <html>
 <head>
     <style>
-        .container {
+        body {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: rgba(46, 87, 46, 0.15);
         }
 
         #circle {
-            width: 300px;
-            height: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
-            margin: 0 10px;
-            transition: background-color 0.5s;
+            background-color: red;
+            transition: left 2s, right 2s;
         }
     </style>
 </head>
 <body>
 <div th:replace="~{blocks/for_tests_with_time}"></div>
-<div class="main">
-    <div class="container">
-        <div id="circle"></div>
-    </div>
+<div>
+    <h1>Нажмите на кнопку <- или ->, когда кружочек будет отходить в нужную сторону</h1>
+</div>
+<div class="container">
+    <div id="circle"></div>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <label id="words" style="margin-bottom: 10px;">Выберите желаемое время прохождения теста:
+        <input type="text" id="chosenTimeS" required/>
+    </label>
+    <button id="startButton">Начать</button>
+</div>
 </div>
 <script>
+    let reactionTimes = [];
+    let chosenTimeS = document.getElementById('chosenTimeS');
+    let words = document.getElementById('words');
     let circle = document.getElementById('circle');
     let containerWidth = document.querySelector('.container').clientWidth;
     let isMoving = false;
     let direction = 'right';
     let distance = 100; // Максимальное расстояние, на которое круг перемещается
+    let clicked = false;
+    let timeout;
+    let startTime;
+    let startButton = document.getElementById('startButton');
+    let progressBar = document.getElementById('progress-bar');
+    let reactionTime;
 
-    function moveCircle() {
-        if (!isMoving) {
-            isMoving = true;
-            let newPosition = getRandomPosition();
-            let newDistance = Math.floor(Math.random() * 10 + 2) * 40;
+    function showResults() {
+        clicked = true;
+        // circleSpeed = 0;
+        localStorage.setItem('answers', JSON.stringify(reactionTimes));
+        localStorage.setItem('chosenTime', JSON.stringify(chosenTime));
+        localStorage.setItem('label', JSON.stringify('Время реакции (мс)'))
+        window.location.replace('/tests/test_8/test_result');
 
-            if (newPosition === 'left') {
-                circle.style.left = (containerWidth / 2 - newDistance) + 'px';
-                direction = 'left';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // console.log(chosenTime)
+        startButton.addEventListener('click', function () {
+            chosenTime = chosenTimeS.value;
+            if (chosenTime === '' || !(/^\d+$/.test(chosenTime)) || parseInt(chosenTime) < 2 || parseInt(chosenTime) > 45) {
+                alert('Невалидная форма записи')
             } else {
-                circle.style.left = (containerWidth / 2 + newDistance) + 'px';
-                direction = 'right';
+                startTime = new Date().getTime();
+                chosenTimeS.style.display = 'none';
+                words.style.display = 'none';
+                testMode = true;
+                startButton.style.display = 'none'; // Скрыть кнопку "Начать"
+
+                function moveCircle() {
+                    reactionTime = new Date().getTime();
+                    if (!isMoving) {
+                        isMoving = true;
+                        // startTime = new Date().getTime();
+                        let newPosition = getRandomPosition();
+                        let newDistance = Math.floor(Math.random() * 10 + 2) * 40;
+
+                        if (newPosition === 'left') {
+                            circle.style.left = (containerWidth / 2 - newDistance) + 'px';
+                            direction = 'left';
+                        } else {
+                            circle.style.left = (containerWidth / 2 + newDistance) + 'px';
+                            direction = 'right';
+                        }
+                        updateProgressBar(); // Обновление прогресс-бара при каждом вызове moveCircle()
+                    }
+                }
+
+                function updateProgressBar() {
+                    let correctPercentage = ((new Date().getTime() - startTime) / (parseFloat(chosenTime) * 60000) * 100);
+                    progressBar.style.width = correctPercentage + '%';
+                    if ((new Date().getTime() - startTime) >= (parseFloat(chosenTime) * 60000)) {
+                        showResults();
+                    }
+                }
+
+                function getRandomPosition() {
+                    return Math.random() < 0.5 ? 'left' : 'right';
+                }
+
+                document.addEventListener('keydown', function (event) {
+                    if (isMoving && event.keyCode === 37 && direction === 'left') {
+                        clicked = true;
+                        reactionTime = new Date().getTime() - reactionTime
+                        reactionTimes.push(reactionTime)
+                        console.log(reactionTime)
+                        resetCircle();
+                    } else if (isMoving && event.keyCode === 39 && direction === 'right') {
+                        clicked = true;
+                        reactionTime = new Date().getTime() - reactionTime
+                        reactionTimes.push(reactionTime)
+                        console.log(reactionTime)
+                        resetCircle();
+                    }
+                });
+
+                function resetCircle() {
+                    clearTimeout(timeout);
+                    circle.style.animation = 'reset 1s';
+                    circle.style.left = '50%';
+                    setTimeout(function () {
+                        circle.style.animation = '';
+                        isMoving = false;
+                        clicked = false;
+                        updateProgressBar(); // Обновление прогресс-бара после возврата круга на место
+                    }, 1000);
+                }
+
+                setInterval(moveCircle, Math.random() * 5000 + 2000);
             }
-
-            setTimeout(function () {
-                isMoving = false;
-            }, 2000); // Задержка перед остановкой круга
-        }
-    }
-
-    function getRandomPosition() {
-        return Math.random() < 0.5 ? 'left' : 'right';
-    }
-
-    document.addEventListener('keydown', function (event) {
-        if (isMoving && event.keyCode === 37 && direction === 'left') {
-            resetCircle();
-        } else if (isMoving && event.keyCode === 39 && direction === 'right') {
-            resetCircle();
-        }
+        });
     });
-
-    function resetCircle() {
-        circle.style.animation = 'reset 1s';
-        circle.style.left = '50%';
-        setTimeout(function () {
-            circle.style.animation = '';
-            isMoving = false;
-        }, 1000);
-    }
-
-    setInterval(moveCircle, Math.random() * 5000 + 2000);
 </script>
 </body>
 </html>

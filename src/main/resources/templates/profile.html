@@ -4,9 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Профиль</title>
-    <style>
-
-    </style>
 </head>
 <body>
 <div th:if="${test}">
@@ -21,7 +18,13 @@
     <div class="button">
         Welcome back, sir <span th:text="${user.getUsername()}"></span><br>
         Your email address is <span th:text="${user.getEmail()}"></span><br><br><br>
+        <!--    <div th:if="${exp}">-->
         <a href="/expert">Режим эксперта</a><br><br>
+        <!--    </div>-->
+        <!--        <div th:text="${q}"></div>-->
+        <input type="hidden" id="q" th:value="${q}">
+        <input type="hidden" id="exp" th:value="${exp}">
+        <!--        <div th:text="${exp}"></div>-->
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="button">Sign out</button>
 
@@ -29,5 +32,9 @@
     </div>
     </p>
 </div>
+<script>
+    console.log(typeof document.getElementById('q').value)
+    console.log(typeof document.getElementById('exp').value)
+</script>
 </body>
 </html>

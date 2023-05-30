@@ -3,14 +3,6 @@
 <head>
     <title>Звуковой сигнал и оценка времени реакции</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            color: white;
-        }
 
         #circle-container {
             position: relative;
@@ -49,14 +41,6 @@
             margin-top: 20px;
             text-align: center;
         }
-
-        #words {
-            margin-bottom: 10px;
-        }
-
-        #chosenTimeS {
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
@@ -86,6 +70,9 @@
     let chosenTime;
     let wholeCircle = false;
     let d = [];
+    let firstTime = true;
+    let changerSpeed = 8.3;
+    let reactionTime;
 
     function showResults() {
         clicked = true;
@@ -125,7 +112,7 @@
 
             if (circlePosition === 180) {
                 clicked = false;
-                reactionTime = new Date().getTime() + 180 * 8.3 / circleSpeed;
+                reactionTime = new Date().getTime() + 180 * changerSpeed / circleSpeed;
             } else if (circlePosition === 360) {
                 if (wholeCircle) {
                     missTimes++;
@@ -142,10 +129,19 @@
             }
 
             circlePosition += circleSpeed;
-            if (d.length < 5) {
-                d.push(new Date().getTime() - reactionTime)
-            } else {
-                console.log(d)
+            if (firstTime) {
+                if (d.length < 5 && reactionTime != 0 && firstTime) {
+                    d.push(new Date().getTime() - reactionTime)
+                } else if (firstTime && d.length == 5) {
+                    let ds = [];
+                    firstTime = false;
+                    for (let i = 0; i < 4; i++) {
+                        ds.push(d[i] - d[i + 1])
+                    }
+                    changerSpeed = Math.abs(ds.reduce((accumulator, currentValue) => accumulator + currentValue, 0) / ds.length);
+                    reactionTime = new Date().getTime() + 180 * changerSpeed / circleSpeed;
+                    console.log(changerSpeed)
+                }
             }
             // console.log(new Date().getTime() - reactionTime)
 
@@ -163,7 +159,7 @@
                 chosenTimeS.style.display = 'none';
                 words.style.display = 'none';
                 testMode = true;
-                startButton.disabled = true; // Чтобы кнопка нельзя было нажать повторно
+                startButton.style.display = 'none'; // Скрыть кнопку "Начать"
                 updateCircle();
             }
         });

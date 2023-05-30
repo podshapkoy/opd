@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: rgba(46, 87, 46, 0.15);
+            cursor: none;
+        }
+
+        #player {
+            position: absolute;
+            width: 250px;
+            height: 150px;
+            /*left: 50%;*/
+            background-color: cadetblue;
+        }
+
+        #target {
+            position: absolute;
+            height: 100px;
+            width: 100px;
+            top: 20%;
+            left: 10%;
+            background-color: rebeccapurple;
+            transition: top 1s ease-in-out, left 1s ease-in-out; /* Анимация для top и left свойств */
+        }
+        input[type="text"]{
+            font-family: Courier, monospace;
+            width: 4rem;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<div>
+    <h1>Необходимо, чтобы двигающийся контейнер был всегда в основном контейнере</h1>
+</div>
+<div id="container">
+    <div id="player"></div>
+    <div id="target"></div>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <label id="words" style="margin-bottom: 10px;color: white">Выберите желаемое время прохождения теста:
+        <input type="text" id="chosenTimeS" required/>
+    </label>
+    <button id="startButton">Начать</button>
+</div>
+
+<script>
+    let startButton = document.getElementById('startButton');
+    let words = document.getElementById('words');
+    let player = document.getElementById('player');
+    let target = document.getElementById('target');
+    let container = document.getElementById('container');
+    let computedStyle = getComputedStyle(target);
+    let initialLeft = parseInt(computedStyle.left, 10);
+    let intervalId;
+    let targetWidth = parseFloat(getComputedStyle(target).width);
+    let firstTime = true;
+    let reactionTime;
+    let reactionTimes = [];
+
+    function showResults() {
+        if (reactionTime > 0) {
+            reactionTimes.push(new Date().getTime() - reactionTime)
+        }
+        localStorage.setItem('answers', JSON.stringify(reactionTimes));
+        localStorage.setItem('chosenTime', JSON.stringify(chosenTime));
+        localStorage.setItem('label', JSON.stringify('Время удержания метки внутри контейнера(мс)'))
+        window.location.replace('/tests/test_9/test_result');
+    }
+
+    startButton.addEventListener('click', function () {
+        chosenTime = chosenTimeS.value;
+        if (chosenTime === '' || !(/^\d+$/.test(chosenTime)) || parseInt(chosenTime) < 2 || parseInt(chosenTime) > 45) {
+            alert('Невалидная форма записи')
+        } else {
+            startTime = new Date().getTime();
+            chosenTimeS.style.display = 'none';
+            words.style.display = 'none';
+            testMode = true;
+            startButton.style.display = 'none'; // Скрыть кнопку "Начать"
+            function startShaking(timeOut) {
+                intervalId = setInterval(shakeSquare, 200);
+                setTimeout(stopShaking, timeOut);
+            }
+
+            function shakeSquare() {
+                let randomOffset = Math.random() * 500 - 250;
+                let newLeft = initialLeft + randomOffset;
+                target.style.left = newLeft + 'px';
+            }
+
+            function stopShaking() {
+                clearInterval(intervalId);
+            }
+
+            function updateTargetPosition() {
+                let random = Math.random();
+                if (random > 0.6) {
+                    let targetX = Math.random() * (parseFloat(getComputedStyle(container).width) - targetWidth / 2 - 1);
+                    target.style.left = targetX + 'px';
+                } else if (random <= 0.6) {
+                    startShaking(2900);
+                }
+            }
+
+            function handleMouseMove(event) {
+                updateProgressBar()
+                let containerRect = container.getBoundingClientRect();
+                let containerWidth = container.offsetWidth;
+                let playerWidth = player.offsetWidth;
+                let mouseX = event.clientX - containerRect.left;
+
+                let playerX = mouseX - playerWidth / 2;
+
+                if (playerX < 0) {
+                    playerX = 0;
+                } else if (playerX + playerWidth > containerWidth) {
+                    playerX = containerWidth - playerWidth;
+                }
+
+                player.style.left = playerX + 'px';
+
+                player.style.left = playerX + 'px';
+
+                // Проверяем, находится ли target внутри player
+                let playerRect = player.getBoundingClientRect();
+                let targetRect = target.getBoundingClientRect();
+                let isInsidePlayer = targetRect.left >= playerRect.left && targetRect.right <= playerRect.right && targetRect.top >= playerRect.top && targetRect.bottom <= playerRect.bottom;
+                if (isInsidePlayer && firstTime) {
+                    reactionTime = new Date().getTime()
+                    firstTime = false;
+                } else if (!isInsidePlayer && !firstTime && reactionTime > 0) {
+                    console.log(new Date().getTime() - reactionTime)
+                    reactionTimes.push(new Date().getTime() - reactionTime)
+                    reactionTime = 0
+                    firstTime = true;
+                }
+            }
+
+            container.addEventListener('mousemove', handleMouseMove);
+
+            setInterval(updateTargetPosition, 3000);
+        }
+    });
+</script>
+
+</body>
+</html>

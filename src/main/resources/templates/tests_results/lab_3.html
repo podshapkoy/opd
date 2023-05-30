@@ -79,7 +79,7 @@
     let answersList;
     if (localStorage.getItem('test7') === null) {
         answersList = [parseFloat(averageMinus), parseFloat(averagePlus), parseFloat(averageModule), parseFloat(deviantMinus), parseFloat(deviantPlus), parseFloat(deviantModule),
-            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / missTimes).toFixed(1)), chosenTime]
+            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / (missTimes+reactionTimes.length)).toFixed(1)), chosenTime]
         labelsList = ['Среднее значение по преждевременному ответу', 'Среднее значение по запаздыванию ответа',
             'Среднее значение ответа по модули', 'Стандарт отклонения по преждевременному ответу', 'Стандарт отклонения по запаздыванию ответа',
             'Стандарт отклонения ответа по модулю', 'Количество пропусков','Количество неверных нажатий', 'Процент наличия реакции','Выбранное время теста(мин)']
@@ -192,7 +192,7 @@
             parseFloat(averageMinus_1), parseFloat(averagePlus_1), parseFloat(averageModule_1), parseFloat(deviantMinus_1), parseFloat(deviantPlus_1), parseFloat(deviantModule_1),
             parseFloat(averageMinus_2), parseFloat(averagePlus_2), parseFloat(averageModule_2), parseFloat(deviantMinus_2), parseFloat(deviantPlus_2), parseFloat(deviantModule_2),
             parseFloat(averageMinus_3), parseFloat(averagePlus_3), parseFloat(averageModule_3), parseFloat(deviantMinus_3), parseFloat(deviantPlus_3), parseFloat(deviantModule_3),
-            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / missTimes).toFixed(1)),chosenTime]
+            missTimes, mistakenTimes, parseFloat((reactionTimes.length * 100 / (missTimes+reactionTimes.length)).toFixed(1)),chosenTime]
         labelsList = ['Среднее значение по преждевременному ответу(общее)', 'Среднее значение по запаздыванию ответа(общее)',
             'Среднее значение ответа по модулю(общее)', 'Стандарт отклонения по преждевременному ответу(общее)', 'Стандарт отклонения по запаздыванию ответа(общее)',
             'Стандарт отклонения ответа по модулю(общее)',
