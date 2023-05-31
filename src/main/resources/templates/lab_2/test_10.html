@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landolt C Test</title>
+    <style>
+        #container {
+            position: relative;
+            width: 800px;
+            margin: 1% auto; /* Изменено значение margin */
+            height: auto;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            background-color: rgb(143, 137, 152);
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+
+        #container_img {
+            display: flex;
+            justify-content: center; /* Добавлено значение justify-content */
+            align-items: center; /* Добавлено значение align-items */
+        }
+
+        #neededRotation {
+            width: 60px;
+            height: 60px;
+        }
+
+        .ring {
+            width: 32px;
+            height: 32px;
+            /*background-color: limegreen;*/
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .ring img {
+            width: 100%;
+            height: 100%;
+            transform: rotate(var(--rotation-angle));
+        }
+
+        .ring.selected {
+            background-color: limegreen;
+        }
+    </style>
+</head>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<body id="body">
+<div>
+    <h1>Отметьте похожие рисунки</h1>
+</div>
+<div id="container_img">
+    <img id="neededRotation" src="../img/ring.png" alt="Needed Rotation">
+</div>
+<div id="container"></div>
+<!--<div id="neededRotation"></div>-->
+<script>
+    let startTime = new Date().getTime();
+    const container = document.getElementById('container');
+    const selectedRingsList = document.getElementById('selectedRings');
+    let rings = []; // Массив для хранения колец
+    const numRings = 9; // Количество колец
+    let totalRings = 400; // Общее количество маленьких изображений
+    const chosenTime = 2; // Время выбора в миллисекундах (5 минут)
+    let neededRotation;
+    let selectedRings = []; // Массив для хранения выбранных колец
+    restart = true;
+    let wrongRings = 0;
+    let rightRings = 0;
+    let beforeChosen = 0;
+    let allRightRings = 0;
+
+    // Создание колец и добавление их в контейнер
+    function createRings() {
+        neededRotation = getRandomRotation();
+        let image = document.getElementById('neededRotation');
+        const rotationAngle = neededRotation;
+        image.style.backgroundImage = `url("../img/ring.png")`;
+        image.style.transform = `rotate(${rotationAngle})`;
+
+        for (let i = 0; i < totalRings; i++) {
+            const ring = document.createElement('div');
+            ring.classList.add('ring');
+            const image = document.createElement('img');
+            image.src = "../img/ring.png";
+            const rotationAngle = getRandomRotation();
+            image.style.setProperty('--rotation-angle', rotationAngle);
+            ring.appendChild(image);
+            rings.push({
+                element: ring,
+                rotation: rotationAngle,
+                num: i
+            });
+            container.appendChild(ring);
+            if (rotationAngle === neededRotation) {
+                allRightRings++;
+            }
+        }
+    }
+
+    // Генерация случайного угла поворота для кольца
+    function getRandomRotation() {
+        const angles = [90, 75, 45, 180, 225, 270, 315, 0];
+        const randomIndex = Math.floor(Math.random() * angles.length);
+        return `${angles[randomIndex]}deg`;
+    }
+
+    // Обработчик клика на кольцо
+    function handleRingClick(event) {
+        const clickedRing = event.target.closest('.ring');
+
+        if (clickedRing) {
+            const selectedRing = rings.find(ring => ring.element === clickedRing);
+
+            if (selectedRing) {
+                // Проверяем, есть ли уже выбранное кольцо в списке выбранных
+                const existingIndex = selectedRings.findIndex(ring => ring.element === selectedRing.element);
+
+                if (existingIndex > -1) {
+                    // Если кольцо уже выбрано, снимаем подсветку и удаляем из списка выбранных
+                    selectedRing.element.classList.remove('selected');
+                    selectedRings.splice(existingIndex, 1);
+                } else {
+                    // Если кольцо еще не выбрано, добавляем подсветку и добавляем в список выбранных
+                    selectedRing.element.classList.add('selected');
+                    selectedRings.push(selectedRing);
+                    console.log(selectedRings);
+                }
+            }
+        }
+    }
+
+    // Запуск теста Landolt C
+    function startLandoltCTest() {
+        container.addEventListener('click', handleRingClick);
+        setInterval(updateProgressBar, 500);
+        setTimeout(stopLandoltCTest, chosenTime * 60000 + 100);
+    }
+
+    // Завершение теста Landolt C
+    function stopLandoltCTest() {
+        container.removeEventListener('click', handleRingClick);
+        resetRings(); // Сбрасываем подсветку со всех колец
+        checkSelectedRings(); // Проверяем выбранные колеса на правильный поворот
+        totalRings += 100; // Увеличиваем общее количество колец для следующего теста
+        console.log(allRightRings + ' ' + rightRings + ' ' + wrongRings + ' ' + beforeChosen);
+        if (totalRings < 600) { // Условие для повторного запуска теста
+            resetTest();
+            createRings();
+            startLandoltCTest();
+        } else {
+            restart = false;
+            resetTest();
+            createRings();
+            startLandoltCTest();
+            // Все три теста завершены
+        }
+    }
+
+    // Сброс подсветки со всех колец
+    function resetRings() {
+        rings.forEach(ring => ring.element.classList.remove('selected'));
+    }
+
+    // Проверка выбранных колец на правильный поворот
+    function checkSelectedRings() {
+        let lastChosen;
+        selectedRings.forEach(ring => {
+                if (ring.rotation === neededRotation) {
+                    rightRings++;
+                } else {
+                    wrongRings++;
+                }
+                lastChosen = ring.num;
+                console.log(lastChosen)
+            }
+        );
+        beforeChosen += (lastChosen || 0);
+        // console.log(`Правильно выбрано колец: ${correctCount}`);
+    }
+
+    // console.log(allRightRings + ' ' + rightRings + ' ' + wrongRings + ' ' + beforeChosen);
+
+    function showResults() {
+        localStorage.setItem('allRightRings', allRightRings)
+        localStorage.setItem('rightRings', rightRings)
+        localStorage.setItem('wrongRings', wrongRings)
+        localStorage.setItem('beforeChosen', beforeChosen)
+        window.location.replace('/tests/test_10/test_result');
+    }
+
+    // Сброс теста
+    function resetTest() {
+        container.innerHTML = ''; // Очищаем контейнер
+        rings = []; // Сбрасываем массив колец
+        selectedRings = []; // Сбрасываем список выбранных колец
+    }
+
+    // Инициализация теста
+    function initializeTest() {
+        createRings();
+        startLandoltCTest();
+    }
+
+    // Запуск инициализации теста при загрузке страницы
+    window.addEventListener('DOMContentLoaded', initializeTest);
+</script>
+</body>
+</html>

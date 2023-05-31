@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body th:fragment="header_10">
+<div id="concentration"></div>
+<div id="volume"></div>
+<script>
+    let allRightRings = parseInt(localStorage.getItem('allRightRings'))
+    let rightRings = parseInt(localStorage.getItem('rightRings'))
+    let wrongRings = parseInt(localStorage.getItem('wrongRings'))
+    let beforeChosen = parseInt(localStorage.getItem('beforeChosen'))
+    let concentration = ((rightRings * 100) / allRightRings);
+    let volume = 0.5936 * beforeChosen
+    console.log(concentration.toFixed(2).toString(), rightRings, allRightRings)
+    console.log(volume.toFixed(2).toString(), beforeChosen)
+    document.getElementById('concentration').innerHTML = ('Концентрация внимания составляет: ' + concentration.toFixed(2).toString()+'%');
+    document.getElementById('volume').innerHTML = ('Объем зрительной информации составляет: '+volume.toFixed(2).toString() + ' бит')
+    console.log(concentration, rightRings, allRightRings)
+    console.log(volume, beforeChosen)
+
+</script>
+
+</body>
+<body th:fragment="header_11">
+<div id="correctNumbers"></div>
+<div id="correctWordsThroughAttempts"></div>
+<script>
+    let correctNumbers = JSON.parse(localStorage.getItem('correctNumbers'))
+    let correctWordsThroughAttempts = JSON.parse(localStorage.getItem('correctWordsThroughAttempts'))
+    console.log(correctWordsThroughAttempts)
+    console.log(correctNumbers)
+    if (correctWordsThroughAttempts[-1] === 15) {
+        document.getElementById('correctWordsThroughAttempts').innerHTML = 'Вы успешно запомнили 15 слов за ' + correctWordsThroughAttempts.length;
+    } else {
+        document.getElementById('correctWordsThroughAttempts').innerHTML = 'К сожалению, вам не удалось запомнить 15 слов за отведенные 5 попыток'
+    }
+    document.getElementById('correctNumbers').innerHTML = correctNumbers + ' из 12 вопросов правильно';
+    // document.getElementById('volume').innerHTML=
+</script>
+</body>
+<body th:fragment="header_12">
+
+</body>
+</html>

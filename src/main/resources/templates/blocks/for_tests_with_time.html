@@ -12,14 +12,18 @@
 </div>
 
 <script>
+    let correctPercentage;
+    let restart = false
     function updateProgressBar() {
         let progressBar = document.getElementById('progress-bar');
-        let correctPercentage = ((new Date().getTime() - startTime) / (0.50 * 60000) * 100);
+        correctPercentage = ((new Date().getTime() - startTime) / (chosenTime *60000) * 100);
         // console.log(correctPercentage);
         progressBar.style.width = correctPercentage + '%';
         // console.log((new Date().getTime() - startTime), (0.50 * 60000))
-        if((new Date().getTime() - startTime)>=(0.50 * 60000)){
+        if((new Date().getTime() - startTime)>=(chosenTime *60000) && !restart){
             showResults();
+        }else if((new Date().getTime() - startTime)>=(chosenTime *60000) && restart){
+            startTime = new Date().getTime()
         }
     }
 

@@ -7,26 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Подключение CSS к HTML</title>
     <style>
+        h1 {
+            color: white;
+        }
+
         .slider {
             display: flex;
             overflow: hidden;
             width: 100%;
+            justify-content: space-between; /* Равномерное распределение блоков */
+            align-items: center;
         }
 
         .slider_1 {
-            width: 20rem;
+            width: calc(25% - 40px); /* 25% ширины контейнера минус отступы */
             height: 8rem;
             margin: 20px;
             background: rgba(68, 72, 29, 0.56);
             border-radius: 15px;
             transition: opacity 1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Центрирование содержимого */
         }
+
         .slider_1 img {
-            width: 5rem;
-            height: 5rem;
+            width: 5.5rem;
+            height: 5.5rem;
             border-radius: 50px;
         }
+
+        .slider_img, .slider_span {
+            padding: 10px; /* Равномерные отступы внутри блока */
+        }
+        span{
+            font-size: 1.75rem;
+            color: white;
+        }
     </style>
+
 </head>
 <body>
 <div th:if="${test}">
@@ -35,22 +54,25 @@
 <div th:if="${not test}">
     <div th:replace="~{blocks/header_3 :: header}"></div>
 </div>
+<h1>Над этим проектом работали</h1>
 <div class="container">
     <div class="slider">
         <div class="slider_1">
-            <img url="img/cat1.jpg"><span>Милый котик</span>
+            <div class="slider_img"><img src="img/cat1.jpg"></div>
+            <div class="slider_span"><span>КОТИК КАРИНА</span></div>
         </div>
         <div class="slider_1">
-            <img url="../img/cat2.jpg"><span>Симпатичный песик</span>
+            <div class="slider_img"><img src="img/cat2.jpg"></div>
+            <div class="slider_span"><span>КОТИК ИРА</span></div>
         </div>
         <div class="slider_1">
-            <img url="../img/cat3.jpg"><span>Милый котик</span>
+            <div class="slider_img"><img src="img/cat3.jpg"></div>
+            <div class="slider_span"><span>КОТИК ЛИЗА</span></div>
         </div>
         <div class="slider_1">
-            <img url="../img/cat4.jpg"><span>Симпатичный песик</span>
+            <div class="slider_img"><img src="img/cat4.jpg"></div>
+            <div class="slider_span"><span>КОТИК КРИС</span></div>
         </div>
-    </div>
-    <div class="main">
     </div>
     <script>
         const sliderItems = document.querySelectorAll('.slider_1');

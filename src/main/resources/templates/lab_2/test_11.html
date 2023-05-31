@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест памяти</title>
+    <style>
+        body {
+            color: white;
+        }
+
+        .game-container {
+            margin-top: 20px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        input[type="text"] {
+            font-family: Courier, monospace;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<h1>Тест памяти</h1>
+<div class="game-container" id="number-game">
+    <h2>Часть 1: Запомните числа</h2>
+    <div id="number-table"></div>
+    <div id="number-input-container" style="display: none;">
+        <input type="text" id="number-input-field" placeholder="Введите числа через пробел">
+        <div class="input-container">
+            <button id="number-submit-btn">Готово</button>
+        </div>
+    </div>
+</div>
+<div class="game-container" id="word-game" style="display: none;">
+    <h2>Часть 2: Запомните слова</h2>
+    <div id="word-container">
+        <span id="word"></span>
+    </div>
+    <div id="word-input-container" style="display: none;">
+        <input type="text" id="word-input-field" placeholder="Введите запомненные слова">
+        <div class="input-container">
+            <button id="word-submit-btn">Готово</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+        // setInterval(updateProgressBar, 500);
+        let startTime = new Date().getTime()
+        var numberGameContainer = document.getElementById("number-game");
+        var numberTable = document.getElementById("number-table");
+        var numberInputContainer = document.getElementById("number-input-container");
+        var numberInputField = document.getElementById("number-input-field");
+        var numberSubmitBtn = document.getElementById("number-submit-btn");
+        var wordGameContainer = document.getElementById("word-game");
+        var wordContainer = document.getElementById("word-container");
+        var wordElement = document.getElementById("word");
+        var wordInputContainer = document.getElementById("word-input-container");
+        var wordInputField = document.getElementById("word-input-field");
+        var wordSubmitBtn = document.getElementById("word-submit-btn");
+        let correctNumbers = 0;
+        let correctWordsThroughAttempts = [];
+
+        // Запуск первого теста - запоминание чисел
+        var numbers = generateRandomNumbers(12);
+        numberTable.innerText = numbers.join(" ");
+        setTimeout(function () {
+            numberTable.style.display = "none";
+            numberInputContainer.style.display = "block";
+        }, 20000);
+
+        numberSubmitBtn.addEventListener("click", function () {
+            var inputNumbers = numberInputField.value.trim().split(" ");
+
+            for (var i = 0; i < numbers.length; i++) {
+                if (inputNumbers.includes(numbers[i])) {
+                    correctNumbers++
+                }
+            }
+            numberInputContainer.style.display = "none";
+            wordGameContainer.style.display = "block";
+            numberGameContainer.style.display = "none";
+            // Запуск второго теста - запоминание слов
+            setTimeout(function () {
+                showWords();
+
+            }, 5000);
+        });
+        // Запуск второго теста - запоминание слов
+        var correctWords = [];
+        var attempts = 0;
+        var words = shuffleArray([
+            'яблоко', 'дерево', 'книга', 'кошка', 'солнце', 'дождь', 'море', 'волк', 'дом', 'звезда',
+            'цветок', 'музыка', 'слон', 'огонь', 'друг', 'небо', 'птица', 'собака', 'снег', 'луна',
+            'рыба', 'лес', 'гора', 'день', 'ночь', 'парк', 'река', 'мечта', 'камень', 'стол',
+            'компьютер', 'школа', 'мороженое', 'курс', 'автомобиль', 'смех', 'гитара', 'космос', 'счастье',
+            'дождевик', 'радуга', 'зима', 'лето', 'весна', 'осень', 'футбол', 'зебра', 'кокос', 'молоко',
+            'душа', 'радость', 'сад', 'парень', 'девушка', 'волна', 'сладость', 'пианино', 'клавиатура', 'краски',
+            'чашка', 'планета', 'фильм', 'птичка', 'муравей', 'зайчик', 'животное', 'печенье', 'носок', 'сапог',
+            'поле', 'лампа', 'фонарь', 'книжка', 'парашют', 'воздух', 'птичка', 'магазин', 'окно', 'ключ',
+            'почта', 'почему', 'слово', 'мышь', 'стул', 'чудо', 'рука', 'голова', 'мозг', 'свет',
+            'медведь', 'глаз', 'стена', 'подарок', 'звук', 'муравейник', 'степь', 'кролик', 'птицы', 'город'
+        ]);
+        currentIndex = 0
+
+        var currentIndex;
+        var showTime = 5000; // 5 секунд
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        // Показ слов
+        function showWords() {
+
+            if (currentIndex < 15) {
+                wordElement.innerText = words[currentIndex];
+                correctWords.push(words[currentIndex])
+                currentIndex++;
+
+                setTimeout(showWords, showTime);
+            } else {
+                // Завершение показа слов и отображение поля ввода
+                currentIndex = 0
+                correctWords = shuffleArray(correctWords)
+                wordContainer.style.display = "none";
+                wordInputContainer.style.display = "block";
+            }
+        }
+
+        function showWordsAgain() {
+            if (currentIndex < 15) {
+
+                wordElement.innerText = correctWords[currentIndex];
+                currentIndex++;
+                console.log(correctWords, currentIndex)
+                setTimeout(showWordsAgain, showTime);
+            } else {
+                currentIndex = 0
+                correctWords = shuffleArray(correctWords)
+                // Завершение показа слов и отображение поля ввода
+                wordContainer.style.display = "none";
+                wordInputContainer.style.display = "block";
+            }
+        }
+
+        wordSubmitBtn.addEventListener("click", function () {
+            var inputWords = wordInputField.value.trim().split(" ");
+            var correctCount = 0;
+            for (var i = 0; i < inputWords.length; i++) {
+                if (correctWords.includes(inputWords[i])) {
+                    correctCount++;
+                }
+            }
+// Вывод результатов
+            var resultMessage = "Вы верно запомнили " + correctCount + " из " + correctWords.length + " слов.";
+            wordElement.innerText = resultMessage;
+            wordInputField.value = "";
+            correctWordsThroughAttempts.push(correctCount)
+            console.log("Вы верно запомнили " + correctCount + " из " + correctWords.length + " слов.")
+            attempts++;
+            if (correctCount === correctWords.length || attempts === 6) {
+                console.log('hi')
+                showResults()
+            } else if (attempts <= 5) {
+                // Сброс теста для повторного тестирования
+                currentIndex = 0;
+                wordContainer.style.display = "block";
+                wordInputContainer.style.display = "none";
+                showWordsAgain();
+            }
+        });
+
+
+        function generateRandomNumbers(count) {
+            var numbers = [];
+            for (var i = 0; i < count; i++) {
+                numbers.push(Math.floor(Math.random() * 100).toString());
+            }
+            return numbers;
+        }
+
+        function showResults() {
+            localStorage.setItem('correctNumbers', JSON.stringify(correctNumbers));
+            localStorage.setItem('correctWordsThroughAttempts', JSON.stringify(correctWordsThroughAttempts));
+            window.location.replace('/tests/test_11/test_result');
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .test-line {
+      margin-bottom: 10px;
+    }
+
+    .selected {
+      background-color: yellow;
+    }
+  </style>
+</head>
+<body>
+<h1>Тест</h1>
+<button id="startButton">Начать</button>
+<button id="endButton" disabled>Конец</button>
+<div id="testContent"></div>
+<p>Время: <span id="timer">0 сек</span></p>
+<button id="checkButton" disabled>Проверить</button>
+<div id="results"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const startButton = document.getElementById('startButton');
+    const endButton = document.getElementById('endButton');
+    const testContent = document.getElementById('testContent');
+    const timer = document.getElementById('timer');
+    const checkButton = document.getElementById('checkButton');
+    const results = document.getElementById('results');
+    let randomQuestions;
+
+    const testMaterial = [
+      ["Х*+*", "клад", "пила", "рана", "жижа", "вода"],
+      ["*Х:*", "репа", "шлак", "соус", "крик", "луна"],
+      ["*=.?", "крик", "обод", "тара", "воск", "рама"],
+      ["?:?=", "лупа", "хата", "обои", "град", "лапа"],
+      ["+?*?", "лицо", "река", "желе", "квас", "окно"],
+      ["Х=ХО+", "старт", "сосна", "пепел", "ребро", "ответ"],
+      ["*+??+", "маска", "касса", "месса", "сумма", "лассо"],
+      ["0=*Х=", "слово", "вахта", "олово", "казак", "жажда"],
+      ["?ХО:?", "аванс", "холод", "стихи", "рупор", "чашка"],
+      ["=*Х=*", "тайна", "кашка", "шапка", "ванна", "ответ"],
+      ["*:0:ХО", "молоко", "фараон", "ананас", "метеор", "мнение"],
+      ["=Х?Х:!", "статья", "талант", "стакан", "рапира", "сорока"],
+      ["?-0=—0", "пурпур", "филиал", "шедевр", "скалка", "фосфор"],
+      ["Х:*+=0", "почерк", "стакан", "полоса", "ангина", "старик"],
+      ["?+0.+=", "разлад", "окорок", "капкан", "сундук", "список"],
+      ["Х*0*Х*0", "балаган", "порошок", "шок", "леденец", "колокол", "соломка"],
+      ["+=0?0?*", "барабан", "пулемет", "чувство", "филолог", "фамилия"],
+      ["*+0=+:!", "гипофиз", "конвоир", "гиацинт", "кипарис", "лазарет"],
+      ["О=*=О:!", "шеренга", "кантата", "милиция", "веревка", "колокол"],
+      ["*:0!Х:!", "поворот", "гравюра", "складка", "селедка", "адмирал"],
+      ["!=+*+0=:", "синоптик", "градация", "оболочка", "фантазия", "биология"],
+      ["?*0=+*0:", "анаконда", "прокурор", "снижение", "внимание", "описание"],
+      ["?=!—ОХ—!", "антрекот", "квартира", "антрацит", "скакалка", "практика"],
+      ["!?+?=Х?0", "катафалк", "царапина", "бурундук", "анфилада", "карандаш"],
+      ["!+=ХООХ:", "пассажир", "оперетта", "коллизии", "рассылка", "комиссия"]
+    ];
+
+    function getRandomQuestions(questions, count) {
+      const shuffledQuestions = questions.sort(() => 0.5 - Math.random());
+      return shuffledQuestions.slice(0, count);
+    }
+
+    let startTime = 0;
+    let timerInterval = null;
+    let selectedWords = [];
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function updateTimer() {
+      const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+      timer.textContent = `${elapsedTime} сек`;
+    }
+
+    function createTest() {
+      testContent.innerHTML = '';
+      randomQuestions = getRandomQuestions(testMaterial, 15);
+      console.log(randomQuestions)
+      randomQuestions.forEach((line) => {
+        const lineDiv = document.createElement('div');
+        lineDiv.classList.add('test-line');
+        // const words = line.split(' ');
+        line.forEach((word, index) => {
+          if (index !== 0) {
+            const wordSpan = document.createElement('span');
+            wordSpan.textContent = word;
+            lineDiv.appendChild(wordSpan);
+            if (index !== line.length - 1) {
+              const spaceSpan = document.createElement('span');
+              spaceSpan.textContent = ' ';
+              lineDiv.appendChild(spaceSpan);
+            }
+          } else {
+            const wordText = document.createElement('plaintext');
+            wordText.textContent = word;
+            lineDiv.appendChild(wordText);
+            if (index !== line.length - 1) {
+              const spaceSpan = document.createElement('span');
+              spaceSpan.textContent = ' ';
+              lineDiv.appendChild(spaceSpan);
+            }
+          }
+        });
+        testContent.appendChild(lineDiv);
+      });
+    }
+
+    function highlightSelectedWords() {
+      const testLines = testContent.getElementsByClassName('test-line');
+      for (let i = 0; i < testLines.length; i++) {
+        const lineDiv = testLines[i];
+        const words = lineDiv.getElementsByTagName('span');
+        for (let j = 0; j < words.length; j++) {
+          const wordSpan = words[j];
+          const word = wordSpan.textContent.trim();
+          if (selectedWords.includes(word)) {
+            wordSpan.classList.add('selected');
+          }
+        }
+      }
+    }
+
+    function clearSelection() {
+      const selectedWordSpans = testContent.getElementsByClassName('selected');
+      while (selectedWordSpans.length) {
+        selectedWordSpans[0].classList.remove('selected');
+      }
+      selectedWords = [];
+    }
+
+    function endTest() {
+      stopTimer();
+      highlightSelectedWords();
+      startButton.disabled = false;
+      endButton.disabled = true;
+      checkButton.disabled = false;
+    }
+
+    function initializeTest() {
+      createTest();
+      clearSelection();
+      timer.textContent = '0 сек';
+      startButton.disabled = true;
+      endButton.disabled = false;
+      checkButton.disabled = true;
+      startTimer();
+    }
+
+    function checkAnswers() {
+      const correctAnswers = [
+        ["Х*+*", "рана"],
+        ["*Х:*", "соус", "крик"],
+        ["*=.?", "воск"],
+        ["?:?=", "обои"],
+        ["+?*?", "желе"],
+        ["Х=ХО+", "сосна"],
+        ["*+??+", "касса"],
+        ["0=*Х=", "вахта"],
+        ["?ХО:?", "рупор"],
+        ["=*Х=*", "кашка"],
+        ["*:0:ХО", "мнение"],
+        ["=Х?Х:!", "статья", "талант", "сорока"],
+        ["?-0=—0", "скалка"],
+        ["Х:*+=0", "почерк", "старик"],
+        ["?+0.+=", "разлад", "сундук"],
+        ["Х*0*Х*0", "колокол"],
+        ["+=0?0?*", "филолог"],
+        ["*+0=+:!", "конвоир", "гиацинт"],
+        ["О=*=О:!", "веревка"],
+        ["*:0!Х:!", "складка",],
+        ["!=+*+0=:", "оболочка", "биология"],
+        ["?*0=+*0:", "внимание"],
+        ["?=!—ОХ—!", "квартира", "практика"],
+        ["!?+?=Х?0", "бурундук", "карандаш"],
+        ["!+=ХООХ:", "оперетта", "комиссия"]
+      ];
+
+
+      let localCorrectAnswers = []
+      let localKeys = [];
+      for (let i = 0; i < randomQuestions.length; i++) {
+
+        for (let j = 0; j < correctAnswers.length; j++) {
+          // console.log(randomQuestions[i][0], correctAnswers[j][0])
+          if (randomQuestions[i][0] === correctAnswers[j][0]) {
+            localCorrectAnswers.push(correctAnswers[j].slice(1, correctAnswers[j].length))
+            localKeys.push(randomQuestions[i][0])
+            break
+            // for (let k = 1; k < correctAnswers[j].length; k++) {
+            //     localCorrectAnswers.push(correctAnswers[j][k])
+            // }
+          }
+        }
+      }
+      console.log(localCorrectAnswers)
+      // if (selectedWords.length === localCorrectAnswers.length) {
+      console.log(selectedWords)
+      let notIncluded = new Set();
+      for (let i = 0; i < localCorrectAnswers.length; i++) {
+        let isLineCorrect = true;
+
+        for (let j = 0; j < localCorrectAnswers[i].length; j++) {
+          // console.log(correctAnswers[i][j])
+          if (!selectedWords.includes(localCorrectAnswers[i][j])) {
+            notIncluded.add(i)
+          } else {
+            selectedWords.splice(selectedWords.indexOf(localCorrectAnswers[i][j]), 1)
+
+
+          }
+        }
+        console.log(selectedWords)
+      }
+      let wrongAnswersSet = new Set();
+      for (let i = 0; i < selectedWords.length; i++) {
+        for (let j = 0; j < randomQuestions.length; j++) {
+          if (randomQuestions[j].includes(selectedWords[i])) {
+            wrongAnswersSet.add(j)
+          }
+        }
+      }
+      console.log(notIncluded)
+      console.log(wrongAnswersSet)
+      console.log(new Set([...notIncluded, ...wrongAnswersSet]))
+      let score = 15 - (new Set([...notIncluded, ...wrongAnswersSet])).size
+
+      const resultText = `Правильных ответов: ${score} из ${localCorrectAnswers.length}`;
+      results.textContent = resultText;
+      console.log(resultText)
+    }
+
+    startButton.addEventListener('click', initializeTest);
+    endButton.addEventListener('click', endTest);
+    checkButton.addEventListener('click', checkAnswers);
+
+    testContent.addEventListener('click', (event) => {
+      const clickedElement = event.target;
+      if (clickedElement.tagName === 'SPAN') {
+        const clickedWord = clickedElement.textContent.trim();
+        if (selectedWords.includes(clickedWord)) {
+          clickedElement.classList.remove('selected');
+          selectedWords = selectedWords.filter((word) => word !== clickedWord);
+        } else {
+          clickedElement.classList.add('selected');
+          selectedWords.push(clickedWord);
+          console.log(selectedWords)
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Тест числовых рядов</title>
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 5px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Тест числовых рядов</h1>
+  <div id="test">
+    <div class="question">
+      <p>Первый ряд: 24 21 19 18 15 13 ? ? 7</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input1">
+    </div>
+    <div class="question">
+      <p>1 4 9 16 ? ? 49 64 81 100</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input2">
+    </div>
+    <div class="question">
+      <p>16 17 15 18 14 19 ? ?</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input3">
+    </div>
+    <div class="question">
+      <p>1 3 6 8 16 18 ? ? 76 78</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input4">
+    </div>
+    <div class="question">
+      <p>7 16 9 5 21 16 9 ? 4</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input5">
+    </div>
+    <div class="question">
+      <p>2 4 8 10 20 22 ? ? 92 94</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input6">
+    </div>
+    <div class="question">
+      <p>24 22 19 15 ? ?</p>
+      <input type="text" placeholder="Введите числа без запятых" id="input7">
+    </div>
+  </div>
+  <button onclick="showResults()">Завершить тест</button>
+</div>
+
+<script>
+  function showResults() {
+    const inputs = [
+      document.getElementById('input1'),
+      document.getElementById('input2'),
+      document.getElementById('input3'),
+      document.getElementById('input4'),
+      document.getElementById('input5'),
+      document.getElementById('input6'),
+      document.getElementById('input7')
+    ];
+
+    const answers = [
+      ['12', '9'],
+      ['25', '36'],
+      ['13', '20'],
+      ['36', '38'],
+      ['13'],
+      ['44', '46'],
+      ['10', '4']
+    ];
+
+    let score = 0;
+    let totalQuestions = answers.length;
+
+    for (let i = 0; i < totalQuestions; i++) {
+      const userAnswer = inputs[i].value.split(' ');
+      console.log(userAnswer)
+      const correctAnswers = answers[i];
+      let isCorrect = true;
+
+      if (correctAnswers.length !== userAnswer.length) {
+        isCorrect = false;
+      } else {
+        for (let j = 0; j < correctAnswers.length; j++) {
+          if (correctAnswers[j] !== userAnswer[j]) {
+            isCorrect = false;
+            break;
+          }
+        }
+      }
+
+      if (isCorrect) {
+        score++;
+      }
+    }
+    console.log(score, totalQuestions)
+
+    // window.location.href = 'results.html?score=' + score + '&total=' + totalQuestions;
+  }
+</script>
+</body>
+</html>
