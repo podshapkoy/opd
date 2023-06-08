@@ -10,9 +10,15 @@
 <div th:replace="~{blocks/header :: header}"></div>
 
 <div class="main">
-    <div id="message"></div>
-    <canvas id="chart" style="width: 30%; height: 40%;"></canvas>
-
+    <div id="form">
+        <form id="reaction-form" th:action="'/tests/test_' + ${testId} + '/test_result'" method="post">
+            <input type="hidden" id="result" name="answersList" value="">
+            <input type="hidden" id="labels" name="labelsList" value="">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="message"></div>
+        <canvas id="chart" style="width: 30%; height: 40%;"></canvas>
+    </div>
     <div th:if="${1<=testId && testId<=5}">
         <div th:replace="~{tests_results/lab_2 :: header}"></div>
     </div>
@@ -29,17 +35,12 @@
     <div th:if="${testId==11}">
         <div th:replace="~{tests_results/lab_5 :: header_11}"></div>
     </div>
-    <form id="reaction-form" th:action="'/tests/test_' + ${testId} + '/test_result'" method="post">
-        <input type="hidden" id="result" name="answersList" value="">
-        <input type="hidden" id="labels" name="labelsList" value="">
-        <button type="submit">Submit</button>
-    </form>
-
+    <div th:if="${testId==12}">
+        <div th:replace="~{tests_results/lab_5 :: header_12}"></div>
+    </div>
+    <div th:if="${testId==13}">
+        <div th:replace="~{tests_results/lab_6 :: header}"></div>
+    </div>
 </div>
-
-<script>
-
-
-</script>
 </body>
 </html>

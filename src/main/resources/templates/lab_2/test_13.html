@@ -1,10 +1,397 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <style>
+        body {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            color: white;
+        }
+
+        .circle-container {
+            position: relative;
+            display: inline-block;
+            width: 300px;
+            height: 300px;
+            background-color: lightgray;
+            border-radius: 50%;
+            border: 1px solid black;
+            margin: 10px;
+        }
+
+        .circle {
+            position: relative;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: red;
+            transform: translate(-20%, -50%);
+        }
+
+        .star {
+            position: absolute;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background-color: yellow;
+            transform: translate(50%, -50%);
+        }
+
+        .squares {
+            margin: 0 1.5rem;
+            width: 15rem;
+            height: 5rem;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: white;
+        }
+
+        .squares:hover {
+            background-color: #ddd;
+        }
+
+        .square-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #square_1 {
+            background: goldenrod;
+        }
+
+        #square_2 {
+            background: orangered;
+        }
+
+        #square_3 {
+            background: turquoise;
+        }
+
+        #timer {
+            text-transform: uppercase;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+
+        #blocks {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+    </style>
 </head>
 <body>
+<div th:replace="~{blocks/for_tests_with_time}"></div>
+<div>
+    <h1 id="h1">Нажимайте на указанные кнопки, когда определенный кружочек дойдет до отметки</h1>
+</div>
+<div id="timer"></div>
+<div id="currency"></div>
+<div class="container" id="container">
+    <div id="circle-container_1" class="circle-container">
+        <div id="circle_1" class="circle"></div>
+        <div class="star" style="top: 50%;" id="star_1"></div>
+    </div>
+    <div id="circle-container_2" class="circle-container">
+        <div id="circle_2" class="circle"></div>
+        <div class="star" style="top: 50%; left: -3%" id="star_2"></div>
+    </div>
+    <div id="circle-container_3" class="circle-container">
+        <div id="circle_3" class="circle"></div>
+        <div class="star" style="top: 90%; left: 75%;" id="star_3"></div>
+    </div>
+    <div id="blocks" style="display: flex;">
+        <div id="square_1" class="squares">
+            <div class="square-text">Нажмите X</div>
+        </div>
+        <div id="square_2" class="squares">
+            <div class="square-text">Нажмите C</div>
+        </div>
+        <div id="square_3" class="squares">
+            <div class="square-text">Нажмите Z</div>
+        </div>
+    </div>
+</div>
 
+<script>
+    let moduleElements;
+    let moduleSumAve;
+    let timeTaken = 0;
+    let circleSpeed;
+    let clicked = false;
+    let words = document.getElementById('words');
+    let currency = document.getElementById('currency');
+    let testMode = false;
+    let startTime;
+    let reactionTimes = [];
+    let reactionTimes_1 = [];
+    let reactionTimes_2 = [];
+    let reactionTimes_3 = [];
+    let missTimes = 0;
+    let mistakenTimes = 0;
+    let chosenTime = 19;
+    let firstTime = true;
+    let circle_1Speed;
+    let reactionTime_1;
+    let d = [];
+    let changerSpeed = 8.3;
+    let h1 = document.getElementById('h1');
+    h1.style.display = 'none';
+
+    function showResults() {
+        clicked = true;
+        circleSpeed = 0;
+        localStorage.setItem('test7', JSON.stringify(7));
+        localStorage.setItem('reactionTimes', JSON.stringify(reactionTimes));
+        localStorage.setItem('missTimes', JSON.stringify(missTimes));
+        localStorage.setItem('mistakenTimes', JSON.stringify(mistakenTimes));
+        localStorage.setItem('reactionTimes_1', JSON.stringify(reactionTimes_1));
+        localStorage.setItem('reactionTimes_2', JSON.stringify(reactionTimes_2));
+        localStorage.setItem('reactionTimes_3', JSON.stringify(reactionTimes_3));
+        localStorage.setItem('chosenTime', JSON.stringify(chosenTime));
+        window.location.replace('/tests/test_13/test_result ');
+
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('container').style.display = 'none';
+        currency.style.display = 'none';
+
+        let seconds = 2 * 60;
+        let firstRest = setInterval(function () {
+            document.getElementById("timer").innerHTML = 'Время: ' + Math.floor(seconds / 60) + '.' + (seconds % 60);
+            seconds--;
+        }, 1000)
+
+        setTimeout(function () { //First two minutes
+            document.getElementById("timer").style.display = 'none';
+            document.getElementById('container').style.display = 'block';
+            h1.style.display = 'block';
+            currency.style.display = 'block';
+            currency.innerHTML = '0%'
+            testMode = true;
+            startTime = new Date().getTime()
+            clearInterval(firstRest)
+            setTimeout(function () {
+                updateProgressBar();
+            }, 1000)
+            updateCircle()
+            setInterval(function () {
+                moduleElements = reactionTimes.map((num) => Math.abs(num));
+                try {
+                    moduleSumAve = (moduleElements
+                        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) + 3000 * missTimes) / (reactionTimes.length + missTimes + mistakenTimes);
+                    let percent = (100 - ((moduleSumAve / 3000) * 100)).toFixed(2) + '%'
+                    if (percent === 'NaN%') {
+                        currency.innerHTML = '0%'
+                    } else {
+                        currency.innerHTML = percent;
+                    }
+                } catch (e) {
+                    currency.innerHTML = '0%'
+                }
+            }, 60*1000)
+
+            setTimeout(function () { //Then 15 minutes for test
+                seconds = 2 * 60;
+                currency.style.display = 'none';
+                document.getElementById("timer").style.display = 'block'
+                document.getElementById('container').style.display = 'none';
+                h1.style.display = 'none';
+                testMode = false
+
+                setInterval(function () {
+                    document.getElementById("timer").innerHTML = 'Время: ' + Math.floor(seconds / 60) + '.' + (seconds % 60);
+                    seconds--;
+                }, 1000)
+
+                setTimeout(function () { //Second two minutes
+                    showResults()
+                },
+                    1000)
+
+            }, 2*60*1000)
+
+        }, 1000);
+
+        let circleContainer_1 = document.getElementById('circle-container_1');
+        let circleContainer_2 = document.getElementById('circle-container_2');
+        let circleContainer_3 = document.getElementById('circle-container_3');
+        let circle_1 = document.getElementById("circle_1");
+        let circle_2 = document.getElementById("circle_2");
+        let circle_3 = document.getElementById("circle_3");
+        circle_1.style.background = 'goldenrod';
+        circle_2.style.background = 'orangered';
+        circle_3.style.background = 'turquoise';
+        circle_1Speed = 1;
+        let circle_2Speed = 0.8;
+        let circle_3Speed = 0.5;
+        let wholeCircle_1 = false;
+        let wholeCircle_2 = false;
+        let wholeCircle_3 = false;
+
+        let startButton = document.getElementById('startButton');
+
+        reactionTime_1 = 0;
+        let reactionTime_2 = 0;
+        let reactionTime_3 = 0;
+        let circle_1Position = 0;
+        let circle_2Position = 0;
+        let circle_3Position = 0;
+
+        // updateSpeed();
+
+        function updateCircle() {
+            updateProgressBar()
+            let radius = circleContainer_1.offsetWidth / 2;
+            let angle_1 = (circle_1Position / 180) * Math.PI;
+            let angle_2 = (circle_2Position / 180) * Math.PI;
+            let angle_3 = (circle_3Position / 180) * Math.PI;
+            let circleX1 = radius * Math.cos(angle_1) + radius;
+            let circleY1 = radius * Math.sin(angle_1) + radius;
+            let circleX2 = radius * Math.cos(angle_2) + radius;
+            let circleY2 = radius * Math.sin(angle_2) + radius;
+            let circleX3 = radius * Math.cos(angle_3) + radius;
+            let circleY3 = radius * Math.sin(angle_3) + radius;
+
+            circle_1.style.left = circleX1 + 'px';
+            circle_1.style.top = circleY1 + 'px';
+            circle_2.style.left = circleX2 + 'px';
+            circle_2.style.top = circleY2 + 'px';
+            circle_3.style.left = circleX3 + 'px';
+            circle_3.style.top = circleY3 + 'px';
+
+            if (circle_1Position === 180) {
+                clicked = false;
+                reactionTime_1 = new Date().getTime() + 180 * changerSpeed / circle_1Speed;
+            } else if (circle_1Position === 360) {
+                if (wholeCircle_1) {
+                    missTimes++;
+                }
+                reactionTime_1 = new Date().getTime();
+                wholeCircle_1 = true;
+                clicked = false;
+            }
+
+
+            if (circle_2Position === 360) {
+                clicked = false;
+                reactionTime_2 = new Date().getTime() + 180 * changerSpeed / circle_2Speed;
+            } else if (circle_2Position === 180) {
+                if (wholeCircle_2) {
+                    missTimes++;
+                }
+                reactionTime_2 = new Date().getTime();
+                wholeCircle_2 = true;
+                clicked = false;
+            }
+
+
+            if (circle_3Position === 236) {
+                clicked = false;
+                reactionTime_3 = new Date().getTime() + 180 * changerSpeed / circle_3Speed;
+            } else if (circle_3Position === 56) {
+                if (wholeCircle_3) {
+                    missTimes++;
+                }
+                reactionTime_3 = new Date().getTime();
+                wholeCircle_3 = true;
+                clicked = false;
+            }
+
+
+            if (circle_1Position >= 360) {
+                circle_1Position = 0;
+            }
+            if (circle_2Position >= 360) {
+                circle_2Position = 0;
+            }
+            if (circle_3Position >= 360) {
+                circle_3Position = 0;
+            }
+
+            circle_1Position += circle_1Speed;
+            circle_2Position += circle_2Speed;
+            circle_2Position = parseFloat(circle_2Position.toFixed(1))
+            circle_3Position += circle_3Speed;
+
+            if (firstTime) {
+                if (d.length < 5 && reactionTime_1 !== 0 && firstTime) {
+                    d.push(new Date().getTime() - reactionTime_1)
+                } else if (firstTime && d.length === 5) {
+                    let ds = [];
+                    firstTime = false;
+                    for (let i = 0; i < 4; i++) {
+                        ds.push(d[i] - d[i + 1])
+                    }
+                    changerSpeed = Math.abs(ds.reduce((accumulator, currentValue) => accumulator + currentValue, 0) / ds.length);
+                    reactionTime = new Date().getTime() + 180 * changerSpeed / circle_1Speed;
+                    console.log(changerSpeed)
+                }
+            }
+
+            requestAnimationFrame(updateCircle);
+        }
+
+
+        document.addEventListener('keydown', function (event) {
+            if (testMode) {
+                //goldenrod
+                if (reactionTime_1 !== 0 && !clicked && (event.key === "z" || event.key === "Z" || event.key === "я" || event.key === "Я")) {
+                    let userReactionTime = new Date().getTime() - reactionTime_1;
+                    console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
+                    clicked = true;
+                    wholeCircle_1 = false;
+                    reactionTimes.push(userReactionTime)
+                    reactionTimes_1.push(userReactionTime)
+                    //orangered
+                } else if (reactionTime_2 !== 0 && !clicked && (event.key === "x" || event.key === "X" || event.key === "ч" || event.key === "Ч")) {
+                    let userReactionTime = new Date().getTime() - reactionTime_2;
+                    console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
+                    clicked = true;
+                    wholeCircle_2 = false;
+                    reactionTimes.push(userReactionTime)
+                    reactionTimes_2.push(userReactionTime)
+                    //turquoise
+                } else if (reactionTime_3 !== 0 && !clicked && (event.key === "c" || event.key === "C" || event.key === "с" || event.key === "С")) {
+                    let userReactionTime = new Date().getTime() - reactionTime_3;
+                    console.log('Ваша реакция: ' + userReactionTime.toFixed(2) + ' мс');
+                    clicked = true;
+                    wholeCircle_3 = false;
+                    reactionTimes.push(userReactionTime)
+                    reactionTimes_3.push(userReactionTime)
+                } else {
+                    console.log('Промах! Нажмите пробел, когда круг проходит звездочку.');
+                    mistakenTimes++;
+                }
+                reactionTime_1 = 0;
+                reactionTime_2 = 0;
+                reactionTime_3 = 0;
+            }
+        });
+
+    })
+    ;
+
+</script>
 </body>
 </html>

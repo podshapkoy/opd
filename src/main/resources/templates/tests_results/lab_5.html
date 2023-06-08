@@ -12,15 +12,18 @@
     let rightRings = parseInt(localStorage.getItem('rightRings'))
     let wrongRings = parseInt(localStorage.getItem('wrongRings'))
     let beforeChosen = parseInt(localStorage.getItem('beforeChosen'))
-    let concentration = ((rightRings * 100) / allRightRings);
-    let volume = 0.5936 * beforeChosen
+    let concentration = ((rightRings * 100) / allRightRings).toFixed(2);
+    let volume = (0.5936 * beforeChosen).toFixed(2)
     console.log(concentration.toFixed(2).toString(), rightRings, allRightRings)
     console.log(volume.toFixed(2).toString(), beforeChosen)
-    document.getElementById('concentration').innerHTML = ('Концентрация внимания составляет: ' + concentration.toFixed(2).toString()+'%');
-    document.getElementById('volume').innerHTML = ('Объем зрительной информации составляет: '+volume.toFixed(2).toString() + ' бит')
+    document.getElementById('concentration').innerHTML = concentration.toString();
+    document.getElementById('volume').innerHTML = (volume.toString() + 'бит')
     console.log(concentration, rightRings, allRightRings)
     console.log(volume, beforeChosen)
-
+    answersList = [parseFloat(concentration), parseFloat(volume)];
+    labelsList = ['Процент концентрации внимания', 'Объем памяти']
+    document.getElementById("result").value = JSON.stringify(answersList);
+    document.getElementById("labels").value = JSON.stringify(labelsList);
 </script>
 
 </body>
@@ -32,16 +35,34 @@
     let correctWordsThroughAttempts = JSON.parse(localStorage.getItem('correctWordsThroughAttempts'))
     console.log(correctWordsThroughAttempts)
     console.log(correctNumbers)
-    if (correctWordsThroughAttempts[-1] === 15) {
+    if (correctWordsThroughAttempts[correctWordsThroughAttempts.length-2] === 15) {
+
         document.getElementById('correctWordsThroughAttempts').innerHTML = 'Вы успешно запомнили 15 слов за ' + correctWordsThroughAttempts.length;
     } else {
         document.getElementById('correctWordsThroughAttempts').innerHTML = 'К сожалению, вам не удалось запомнить 15 слов за отведенные 5 попыток'
     }
     document.getElementById('correctNumbers').innerHTML = correctNumbers + ' из 12 вопросов правильно';
-    // document.getElementById('volume').innerHTML=
+    answersList = [parseFloat(correctNumbers), parseFloat(correctWordsThroughAttempts[-1])];
+    labelsList = ['Количество вопросов с правильным ответом', 'Количество слов, которые удалось запомнить']
+    document.getElementById("result").value = JSON.stringify(answersList);
+    document.getElementById("labels").value = JSON.stringify(labelsList);
 </script>
 </body>
 <body th:fragment="header_12">
-
+<div id="score"></div>
+<div id="wordsRight"></div>
+<script>
+    let score = JSON.parse(localStorage.getItem('score'))
+    console.log(score)
+    let wordsRight = JSON.parse(localStorage.getItem('wordsRight'))
+    console.log(wordsRight)
+    document.getElementById('score').innerHTML = 'Вы правильно разгадали ' + wordsRight + ' слов'
+    document.getElementById('wordsRight').innerHTML = 'Вы угадали последовательность у ' + score + ' рядов'
+    answersList = [parseFloat(score), parseFloat(wordsRight)];
+    labelsList = ['Количество разгаданных слов', 'Количество разгаданных рядом']
+    document.getElementById("result").value = JSON.stringify(answersList);
+    document.getElementById("labels").value = JSON.stringify(labelsList);
+</script>
 </body>
+
 </html>
